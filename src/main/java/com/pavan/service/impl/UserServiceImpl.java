@@ -1,10 +1,13 @@
 package com.pavan.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
+import com.pavan.modal.FixedDeposit;
 import com.pavan.modal.User;
 import com.pavan.repository.UserRespository;
 import com.pavan.service.UserService;
@@ -35,7 +38,7 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 
-		if (user.getId() == null && user.getId() == 0) {
+		if (user.getId() == null || user.getId() == 0) {
 			message = "User saved successfully";
 		} else {
 			message = "User updated successfully";
@@ -50,10 +53,13 @@ public class UserServiceImpl implements UserService {
 		if (id == null || id == 0) {
 			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
 		} else {
-			if (usersRepository.getOne(id) != null) {
-				return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, null, usersRepository.getOne(id));
+
+			Optional<User> userOp = usersRepository.findById(id);
+			if (userOp.isPresent()) {
+				User user = userOp.get();
+				return new ApiResponse(HttpStatus.OK, null, user);
 			} else {
-				return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
+				return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 			}
 		}
 	}
