@@ -16,4 +16,6 @@ public interface BankService {
 
 	public ApiResponse deleteBank(Long id);
 
+	public ApiResponse deleteBanks();
+
 }

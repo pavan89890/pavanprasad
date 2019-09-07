@@ -1,5 +1,8 @@
 package com.pavan.service.impl;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import com.pavan.beans.ApiResponse;
 import com.pavan.modal.Bank;
 import com.pavan.repository.BankRespository;
 import com.pavan.service.BankService;
+import com.pavan.util.Utility;
 
 @Service
 public class BankServiceImpl implements BankService {
@@ -21,10 +25,21 @@ public class BankServiceImpl implements BankService {
 
 	@Override
 	public ApiResponse getBanks() {
-		if (bankRepository.findAll() == null) {
-			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
+		
+		Map<String,Object> data=new LinkedHashMap<>();
+		
+		List<Bank> banks=bankRepository.findAll();
+		
+		if (Utility.isEmpty(banks)) {
+			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		}
-		return new ApiResponse(HttpStatus.OK, null, bankRepository.findAll());
+		
+		Double totalBalance=banks.stream().mapToDouble(x->x.getBalance()).sum();
+
+		data.put("banks",banks);
+		data.put("totalBalance",totalBalance);
+		
+		return new ApiResponse(HttpStatus.OK, null,data);
 	}
 
 	@Override
@@ -50,7 +65,7 @@ public class BankServiceImpl implements BankService {
 	@Override
 	public ApiResponse getBank(Long id) {
 		if (id == null || id == 0) {
-			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
+			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
 
 			Optional<Bank> bankOp = bankRepository.findById(id);
@@ -66,12 +81,19 @@ public class BankServiceImpl implements BankService {
 	@Override
 	public ApiResponse deleteBank(Long id) {
 		if (getBank(id).getData() == null) {
-			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
+			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
 			bankRepository.delete((Bank) getBank(id).getData());
 			message = "Bank deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}
+	}
+
+	@Override
+	public ApiResponse deleteBanks() {
+		bankRepository.deleteAll();
+		message = "Banks deleted successfully";
+		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 
 }

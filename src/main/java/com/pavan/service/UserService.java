@@ -16,4 +16,6 @@ public interface UserService {
 
 	public ApiResponse deleteUser(Long id);
 
+	public ApiResponse deleteUsers();
+
 }

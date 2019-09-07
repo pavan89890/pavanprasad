@@ -51,4 +51,9 @@ public class BankController {
 	public ApiResponse deleteBank(@PathVariable(value = "id") Long id) {
 		return bankService.deleteBank(id);
 	}
+	
+	@DeleteMapping
+	public ApiResponse deleteBanks() {
+		return bankService.deleteBanks();
+	}
 }

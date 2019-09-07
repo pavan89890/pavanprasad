@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FixedDepositBean {
+public class FdBean {
 	private Long id;
 	private String bank;
 	private Float depAmount;

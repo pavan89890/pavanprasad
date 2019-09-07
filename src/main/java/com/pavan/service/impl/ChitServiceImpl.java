@@ -1,5 +1,8 @@
 package com.pavan.service.impl;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import com.pavan.beans.ApiResponse;
 import com.pavan.modal.Chit;
 import com.pavan.repository.ChitRespository;
 import com.pavan.service.ChitService;
+import com.pavan.util.Utility;
 
 @Service
 public class ChitServiceImpl implements ChitService {
@@ -21,10 +25,20 @@ public class ChitServiceImpl implements ChitService {
 
 	@Override
 	public ApiResponse getChits() {
-		if (chitRepository.findAll() == null) {
-			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
+		Map<String,Object> data=new LinkedHashMap<>();
+		List<Chit> chits=chitRepository.findAll();
+		if (Utility.isEmpty(chits)) {
+			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		}
-		return new ApiResponse(HttpStatus.OK, null, chitRepository.findAll());
+		
+		data.put("chits",chits);
+		
+		Double totalDeposited=chits.stream().mapToDouble(x->x.getActualAmount()).sum();
+		
+		data.put("totalDeposited",totalDeposited);
+		data.put("totalMatured",180000);
+		
+		return new ApiResponse(HttpStatus.OK, null,data);
 	}
 
 	@Override
@@ -50,7 +64,7 @@ public class ChitServiceImpl implements ChitService {
 	@Override
 	public ApiResponse getChit(Long id) {
 		if (id == null || id == 0) {
-			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
+			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
 
 			Optional<Chit> chitOp = chitRepository.findById(id);
@@ -66,12 +80,19 @@ public class ChitServiceImpl implements ChitService {
 	@Override
 	public ApiResponse deleteChit(Long id) {
 		if (getChit(id).getData() == null) {
-			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
+			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
 			chitRepository.delete((Chit) getChit(id).getData());
 			message = "Chit deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}
+	}
+
+	@Override
+	public ApiResponse deleteChits() {
+		chitRepository.deleteAll();
+		message = "Chits deleted successfully";
+		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 
 }

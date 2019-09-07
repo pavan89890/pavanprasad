@@ -54,4 +54,9 @@ public class ChitController {
 	public ApiResponse deleteChit(@PathVariable(value = "id") Long id) {
 		return chitService.deleteChit(id);
 	}
+	
+	@DeleteMapping
+	public ApiResponse deleteChits() {
+		return chitService.deleteChits();
+	}
 }

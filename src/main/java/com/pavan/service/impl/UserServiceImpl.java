@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public ApiResponse getUsers() {
 		if (usersRepository.findAll() == null) {
-			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
+			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
 		}
 		return new ApiResponse(HttpStatus.OK, null, usersRepository.findAll());
 	}
@@ -72,6 +72,13 @@ public class UserServiceImpl implements UserService {
 			message = "User deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}
+	}
+
+	@Override
+	public ApiResponse deleteUsers() {
+		usersRepository.deleteAll();
+		message = "Users deleted successfully";
+		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 
 }

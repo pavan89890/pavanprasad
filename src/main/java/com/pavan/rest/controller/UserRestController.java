@@ -51,4 +51,9 @@ public class UserRestController {
 	public ApiResponse deleteUser(@PathVariable(value = "id") Long id) {
 		return userService.deleteUser(id);
 	}
+	
+	@DeleteMapping()
+	public ApiResponse deleteUsers() {
+		return userService.deleteUsers();
+	}
 }

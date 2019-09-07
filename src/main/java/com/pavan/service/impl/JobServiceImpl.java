@@ -1,5 +1,8 @@
 package com.pavan.service.impl;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
+import com.pavan.modal.Bank;
 import com.pavan.modal.Job;
 import com.pavan.repository.JobRespository;
 import com.pavan.service.JobService;
+import com.pavan.util.Utility;
 
 @Service
 public class JobServiceImpl implements JobService {
@@ -34,10 +39,21 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	public ApiResponse getJobs() {
-		if (jobsRepository.findAll() == null) {
-			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
+		
+		Map<String,Object> data=new LinkedHashMap<>();
+		
+		List<Job> jobs=jobsRepository.findAll();
+		
+		if (Utility.isEmpty(jobs)) {
+			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
 		}
-		return new ApiResponse(HttpStatus.OK, null, jobsRepository.findAll());
+		
+		Float totalExperience=0f;
+
+		data.put("jobs",jobs);
+		data.put("totalExperience",totalExperience);
+		
+		return new ApiResponse(HttpStatus.OK, null,data);
 	}
 
 	@Override
@@ -65,6 +81,13 @@ public class JobServiceImpl implements JobService {
 			message = "Job deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}
+	}
+
+	@Override
+	public ApiResponse deleteJobs() {
+		jobsRepository.deleteAll();
+		message = "Jobs deleted successfully";
+		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 
 }

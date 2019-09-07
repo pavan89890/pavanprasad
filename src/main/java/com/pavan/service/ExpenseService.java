@@ -15,5 +15,7 @@ public interface ExpenseService {
 	public ApiResponse getExpense(Long id);
 
 	public ApiResponse deleteExpense(Long id);
+	
+	public ApiResponse deleteExpenses();
 
 }

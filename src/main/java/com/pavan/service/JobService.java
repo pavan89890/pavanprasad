@@ -16,4 +16,6 @@ public interface JobService {
 
 	public ApiResponse deleteJob(Long id);
 
+	public ApiResponse deleteJobs();
+
 }

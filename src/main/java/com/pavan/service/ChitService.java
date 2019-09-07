@@ -16,4 +16,6 @@ public interface ChitService {
 
 	public ApiResponse deleteChit(Long id);
 
+	public ApiResponse deleteChits();
+
 }

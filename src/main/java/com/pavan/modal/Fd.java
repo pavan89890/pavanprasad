@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "t_fixed_deposit")
-public class FixedDeposit {
+public class Fd {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
