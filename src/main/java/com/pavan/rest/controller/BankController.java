@@ -16,7 +16,7 @@ import com.pavan.modal.Bank;
 import com.pavan.service.BankService;
 
 @RestController
-@RequestMapping(path = "/banks/")
+@RequestMapping(path = "/banks")
 @CrossOrigin("*")
 public class BankController {
 

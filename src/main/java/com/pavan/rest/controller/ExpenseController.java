@@ -1,11 +1,6 @@
 package com.pavan.rest.controller;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.ExpenseBean;
-import com.pavan.modal.Bank;
 import com.pavan.modal.Expense;
 import com.pavan.service.ExpenseService;
-import com.pavan.util.Utility;
 
 @RestController
 @RequestMapping(path = "/expenses/")

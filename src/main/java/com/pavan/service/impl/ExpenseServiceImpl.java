@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
-import com.pavan.modal.Chit;
 import com.pavan.modal.Expense;
 import com.pavan.repository.ExpenseRespository;
 import com.pavan.service.ExpenseService;
