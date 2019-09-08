@@ -1163,7 +1163,8 @@ __webpack_require__.r(__webpack_exports__);
 var ApiService = /** @class */ (function () {
     function ApiService(http) {
         this.http = http;
-        this.backendUrl = "http://localhost:8080/";
+        // backendUrl:string="http://localhost:8080/";
+        this.backendUrl = "https://pavanprasad.herokuapp.com/";
     }
     ApiService.prototype.getApiService = function (url) {
         return this.http.get(this.backendUrl + url);
