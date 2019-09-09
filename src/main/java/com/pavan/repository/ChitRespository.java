@@ -7,5 +7,5 @@ import com.pavan.modal.Chit;
 
 @Repository
 public interface ChitRespository extends JpaRepository<Chit, Long> {
-	public Chit findByMonthAndYear(Integer month, Integer year);
+	public Chit findByMonthAndYear(String month, Integer year);
 }

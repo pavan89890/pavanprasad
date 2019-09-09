@@ -1,5 +1,6 @@
 package com.pavan.service.impl;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
+import com.pavan.beans.FdBean;
 import com.pavan.modal.Fd;
 import com.pavan.repository.FdRespository;
 import com.pavan.service.FdService;
@@ -31,6 +33,8 @@ public class FdServiceImpl implements FdService {
 		} else {
 			message = "Fixed Deposit updated successfully";
 		}
+		
+		
 		fdRepository.save(fixedDeposit);
 
 		return new ApiResponse(HttpStatus.OK, message, null);
@@ -43,7 +47,34 @@ public class FdServiceImpl implements FdService {
 		
 		List<Fd> fds=fdRepository.findAll();
 		
-		if (Utility.isEmpty(fds)) {
+		List<FdBean> fdBeans=new ArrayList<>();
+		
+		for(Fd fd:fds) {
+			FdBean fdBean=new FdBean();
+			
+			fdBean.setId(fd.getId());
+			fdBean.setBank(fd.getBank());
+			fdBean.setDepAmount(fd.getDepAmount());
+			fdBean.setRoi(fd.getRoi());
+			fdBean.setMaturedAmount(fd.getMaturedAmount());
+			
+			if(fd.getDepositedOn()!=null) {
+				fdBean.setDepositedOnStr(Utility.onlyDateSdf.format(fd.getDepositedOn()));	
+			}
+			
+			
+			fdBean.setPeriodInMonths(fd.getPeriodInMonths());
+			
+			if(fd.getMaturedOn()!=null) {
+				fdBean.setMaturedOnStr(Utility.onlyDateSdf.format(fd.getMaturedOn()));	
+			}
+			
+			fdBean.setRemainingTime("");
+			
+			fdBeans.add(fdBean);
+		}
+		
+		if (Utility.isEmpty(fdBeans)) {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
 		}
 		
@@ -51,7 +82,7 @@ public class FdServiceImpl implements FdService {
 		
 		Double totalMatured=fds.stream().mapToDouble(x->x.getMaturedAmount()).sum();
 		
-		data.put("fds",fds);
+		data.put("fds",fdBeans);
 		data.put("totalDeposited",totalDeposited);
 		data.put("totalMatured",totalMatured);
 		

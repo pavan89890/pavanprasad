@@ -22,7 +22,7 @@ import com.pavan.service.FdService;
 import com.pavan.util.Utility;
 
 @RestController
-@RequestMapping(path = "/fds/")
+@RequestMapping(path = "/fds")
 @CrossOrigin("*")
 public class FdController {
 
@@ -51,7 +51,7 @@ public class FdController {
 
 		if (!Utility.isEmpty(fdBean.getDepositedOnStr())) {
 			try {
-				depositedOn = Utility.onlyDateSdf.parse(fdBean.getDepositedOnStr());
+				depositedOn = Utility.yyyy_MM_dd.parse(fdBean.getDepositedOnStr());
 			} catch (ParseException e) {
 				return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null);
 			}

@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "t_bank")
-public class Chit {
+public class Chit extends BaseEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,7 +22,7 @@ public class Chit {
 	private Long id;
 
 	@Column(name = "MONTH")
-	private Integer month;
+	private String month;
 	
 	@Column(name = "YEAR")
 	private Integer year;

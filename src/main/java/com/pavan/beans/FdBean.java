@@ -17,5 +17,6 @@ public class FdBean {
 	private Date depositedOn;
 	private Integer periodInMonths;
 	private Date maturedOn;
+	private String maturedOnStr;
 	private String remainingTime;
 }

@@ -5,6 +5,7 @@ import java.util.Collection;
 
 public class Utility {
 	public static final SimpleDateFormat onlyDateSdf = new SimpleDateFormat("dd-MM-yyyy");
+	public static final SimpleDateFormat yyyy_MM_dd = new SimpleDateFormat("yyyy-MM-dd");
 
 	public static boolean isEmpty(Object obj) {
 		try {
