@@ -19,7 +19,7 @@ import com.pavan.service.JobService;
 import com.pavan.util.Utility;
 
 @RestController
-@RequestMapping(path = "/jobs")
+@RequestMapping(path = "/api/jobs")
 @CrossOrigin("*")
 public class JobController {
 

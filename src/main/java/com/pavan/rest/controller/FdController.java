@@ -22,7 +22,7 @@ import com.pavan.service.FdService;
 import com.pavan.util.Utility;
 
 @RestController
-@RequestMapping(path = "/fds")
+@RequestMapping(path = "/api/fds")
 @CrossOrigin("*")
 public class FdController {
 

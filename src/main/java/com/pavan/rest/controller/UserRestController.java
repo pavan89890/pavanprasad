@@ -16,7 +16,7 @@ import com.pavan.modal.User;
 import com.pavan.service.UserService;
 
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping(path = "/api/users")
 @CrossOrigin("*")
 public class UserRestController {
 

@@ -16,7 +16,7 @@ import com.pavan.modal.Expense;
 import com.pavan.service.ExpenseService;
 
 @RestController
-@RequestMapping(path = "/expenses")
+@RequestMapping(path = "/api/expenses")
 @CrossOrigin("*")
 public class ExpenseController {
 

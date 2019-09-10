@@ -16,7 +16,7 @@ import com.pavan.modal.Chit;
 import com.pavan.service.ChitService;
 
 @RestController
-@RequestMapping(path = "/chits")
+@RequestMapping(path = "/api/chits")
 @CrossOrigin("*")
 public class ChitController {
 
