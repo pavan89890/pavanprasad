@@ -25,21 +25,21 @@ public class BankServiceImpl implements BankService {
 
 	@Override
 	public ApiResponse getBanks() {
-		
-		Map<String,Object> data=new LinkedHashMap<>();
-		
-		List<Bank> banks=bankRepository.findAll();
-		
+
+		Map<String, Object> data = new LinkedHashMap<>();
+
+		List<Bank> banks = bankRepository.findAll();
+
 		if (Utility.isEmpty(banks)) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		}
-		
-		Double totalBalance=banks.stream().mapToDouble(x->x.getBalance()).sum();
 
-		data.put("banks",banks);
-		data.put("totalBalance",totalBalance);
-		
-		return new ApiResponse(HttpStatus.OK, null,data);
+		Float totalBalance = bankRepository.getTotalBalance();
+
+		data.put("banks", banks);
+		data.put("totalBalance", totalBalance);
+
+		return new ApiResponse(HttpStatus.OK, null, data);
 	}
 
 	@Override

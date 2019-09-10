@@ -33,7 +33,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
 		}
 		
-		Double totalExpenses=expenses.stream().mapToDouble(x->x.getAmount()).sum();
+		Float totalExpenses = expenseRepository.getTotalExpenseAmount();
 		
 		data.put("expenses",expenses);
 		data.put("totalExpenses",totalExpenses);

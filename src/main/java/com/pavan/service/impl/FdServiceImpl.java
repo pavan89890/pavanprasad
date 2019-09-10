@@ -78,9 +78,9 @@ public class FdServiceImpl implements FdService {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
 		}
 		
-		Double totalDeposited=fds.stream().mapToDouble(x->x.getDepAmount()).sum();
+		Float totalDeposited = fdRepository.getTotalDeposited();
 		
-		Double totalMatured=fds.stream().mapToDouble(x->x.getMaturedAmount()).sum();
+		Float totalMatured = fdRepository.getTotalMatured();
 		
 		data.put("fds",fdBeans);
 		data.put("totalDeposited",totalDeposited);
