@@ -85,11 +85,6 @@ public class FdServiceImpl implements FdService {
 
 
 		data.put("fds", fdBeans);
-
-		
-		if (Utility.isEmpty(fdBeans)) {
-			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
-		}
 		
 		Float totalDeposited = fdRepository.getTotalDeposited();
 		
