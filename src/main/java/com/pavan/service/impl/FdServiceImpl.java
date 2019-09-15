@@ -1,5 +1,7 @@
 package com.pavan.service.impl;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,8 +35,7 @@ public class FdServiceImpl implements FdService {
 		} else {
 			message = "Fixed Deposit updated successfully";
 		}
-		
-		
+
 		fdRepository.save(fixedDeposit);
 
 		return new ApiResponse(HttpStatus.OK, message, null);
@@ -42,51 +43,55 @@ public class FdServiceImpl implements FdService {
 
 	@Override
 	public ApiResponse getFds() {
+
+		Map<String, Object> data = new LinkedHashMap<>();
+
+		List<Fd> fds = fdRepository.findAll();
+
+		List<FdBean> fdBeans = new ArrayList<>();
 		
-		Map<String,Object> data=new LinkedHashMap<>();
-		
-		List<Fd> fds=fdRepository.findAll();
-		
-		List<FdBean> fdBeans=new ArrayList<>();
-		
-		for(Fd fd:fds) {
-			FdBean fdBean=new FdBean();
-			
+		if (Utility.isEmpty(fds)) {
+			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
+		}
+
+		for (Fd fd : fds) {
+			FdBean fdBean = new FdBean();
+
 			fdBean.setId(fd.getId());
 			fdBean.setBank(fd.getBank());
 			fdBean.setDepAmount(fd.getDepAmount());
 			fdBean.setRoi(fd.getRoi());
 			fdBean.setMaturedAmount(fd.getMaturedAmount());
-			
-			if(fd.getDepositedOn()!=null) {
-				fdBean.setDepositedOnStr(Utility.onlyDateSdf.format(fd.getDepositedOn()));	
+
+			if (fd.getDepositedOn() != null) {
+				fdBean.setDepositedOnStr(Utility.yyyy_MM_dd.format(fd.getDepositedOn()));
 			}
-			
-			
+
 			fdBean.setPeriodInMonths(fd.getPeriodInMonths());
-			
-			if(fd.getMaturedOn()!=null) {
-				fdBean.setMaturedOnStr(Utility.onlyDateSdf.format(fd.getMaturedOn()));	
+
+			if (fd.getMaturedOn() != null) {
+				fdBean.setMaturedOnStr(Utility.yyyy_MM_dd.format(fd.getMaturedOn()));
+
+				LocalDate date1 = LocalDate.now();
+
+				LocalDate date2 = fd.getMaturedOn().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				fdBean.setRemainingTime(Utility.getDateDifference(date1, date2));
+
 			}
-			
-			fdBean.setRemainingTime("");
-			
+
 			fdBeans.add(fdBean);
 		}
-		
-		if (Utility.isEmpty(fdBeans)) {
-			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
-		}
-		
-		Double totalDeposited=fds.stream().mapToDouble(x->x.getDepAmount()).sum();
-		
-		Double totalMatured=fds.stream().mapToDouble(x->x.getMaturedAmount()).sum();
-		
-		data.put("fds",fdBeans);
-		data.put("totalDeposited",totalDeposited);
-		data.put("totalMatured",totalMatured);
-		
-		return new ApiResponse(HttpStatus.OK, null,data);
+
+		Double totalDeposited = fds.stream().mapToDouble(x -> !Utility.isEmpty(x.getDepAmount())?x.getDepAmount():0).sum();
+
+		Double totalMatured = fds.stream().mapToDouble(x -> !Utility.isEmpty(x.getMaturedAmount())?x.getMaturedAmount():0).sum();
+
+		data.put("fds", fdBeans);
+		data.put("totalDeposited", totalDeposited);
+		data.put("totalMatured", totalMatured);
+
+		return new ApiResponse(HttpStatus.OK, null, data);
 	}
 
 	@Override

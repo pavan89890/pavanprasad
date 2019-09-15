@@ -28,7 +28,7 @@ public class BankServiceImpl implements BankService {
 		
 		Map<String,Object> data=new LinkedHashMap<>();
 		
-		List<Bank> banks=bankRepository.findAll();
+		List<Bank> banks=bankRepository.getBanksOrderByBalDesc();
 		
 		if (Utility.isEmpty(banks)) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);

@@ -22,7 +22,7 @@ public class Chit extends BaseEntity{
 	private Long id;
 
 	@Column(name = "MONTH")
-	private String month;
+	private Integer month;
 	
 	@Column(name = "YEAR")
 	private Integer year;

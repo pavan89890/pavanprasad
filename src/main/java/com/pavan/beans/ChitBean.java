@@ -7,7 +7,8 @@ import lombok.Setter;
 @Setter
 public class ChitBean {
 	private Long id;
-	private String month;
+	private Integer month;
+	private String monthStr;
 	private Integer year;
 	private Float actualAmount;
 	private Float paidAmount;

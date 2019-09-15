@@ -1,11 +1,16 @@
 package com.pavan.util;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Collection;
 
 public class Utility {
-	public static final SimpleDateFormat onlyDateSdf = new SimpleDateFormat("dd-MM-yyyy");
+
 	public static final SimpleDateFormat yyyy_MM_dd = new SimpleDateFormat("yyyy-MM-dd");
+
+	public static final String[] monthNames = { "January", "February", "March", "April", "May", "June", "July",
+			"August", "September", "October", "November", "December" };
 
 	public static boolean isEmpty(Object obj) {
 		try {
@@ -29,6 +34,20 @@ public class Utility {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	public static String getDateDifference(LocalDate date1, LocalDate date2) {
+		Period age = Period.between(date1, date2);
+		String ageVal = age.getYears() + " Years, " + age.getMonths() + " Months, " + (age.getDays() + 1) + " Days";
+		return ageVal;
+	}
+
+	public static String getMonthName(Integer month) {
+		String monthName = "";
+		if(month!=null) {
+			monthName=monthNames[month-1];
+		}
+		return monthName;
 	}
 
 }

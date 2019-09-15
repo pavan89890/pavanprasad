@@ -1,8 +1,7 @@
 package com.pavan.rest.controller;
 
-import java.text.ParseException;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,20 +37,17 @@ public class JobController {
 		try {
 			if (!Utility.isEmpty(jobBean.getDojStr())) {
 
-				jobBean.setDoj(Utility.onlyDateSdf.parse(jobBean.getDojStr()));
+				job.setDoj(Utility.yyyy_MM_dd.parse(jobBean.getDojStr()));
 
 			}
 
 			if (!Utility.isEmpty(jobBean.getDolStr())) {
-				jobBean.setDoj(Utility.onlyDateSdf.parse(jobBean.getDolStr()));
+				job.setDol(Utility.yyyy_MM_dd.parse(jobBean.getDolStr()));
 			}
 
-		} catch (ParseException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(),null);
 		}
-
-		job.setDoj(jobBean.getDoj());
-		job.setDol(jobBean.getDol());
 
 		return jobService.saveJob(job);
 

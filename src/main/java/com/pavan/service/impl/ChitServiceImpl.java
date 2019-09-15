@@ -1,5 +1,6 @@
 package com.pavan.service.impl;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
+import com.pavan.beans.ChitBean;
 import com.pavan.modal.Chit;
 import com.pavan.repository.ChitRespository;
 import com.pavan.service.ChitService;
@@ -26,14 +28,29 @@ public class ChitServiceImpl implements ChitService {
 	@Override
 	public ApiResponse getChits() {
 		Map<String,Object> data=new LinkedHashMap<>();
-		List<Chit> chits=chitRepository.findAll();
+		
+		List<Chit> chits=chitRepository.getChitsOrderByYearDesc();
+		List<ChitBean> chitBeans=new ArrayList<>();
+		
 		if (Utility.isEmpty(chits)) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
+		}else {
+			
+			for (Chit chit : chits) {
+				ChitBean bean=new ChitBean();
+				bean.setId(chit.getId());
+				bean.setMonth(chit.getMonth());
+				bean.setMonthStr(Utility.getMonthName(chit.getMonth()));
+				bean.setYear(chit.getYear());
+				bean.setActualAmount(chit.getActualAmount());
+				bean.setPaidAmount(chit.getPaidAmount());
+				bean.setProfit(chit.getProfit());
+			}
 		}
 		
-		data.put("chits",chits);
+		data.put("chits",chitBeans);
 		
-		Double totalDeposited=chits.stream().mapToDouble(x->x.getActualAmount()).sum();
+		Double totalDeposited = chits.stream().mapToDouble(x -> !Utility.isEmpty(x.getActualAmount())?x.getActualAmount():0).sum();
 		
 		data.put("totalDeposited",totalDeposited);
 		data.put("totalMatured",180000);
