@@ -83,15 +83,23 @@ public class FdServiceImpl implements FdService {
 			fdBeans.add(fdBean);
 		}
 
-		Double totalDeposited = fds.stream().mapToDouble(x -> !Utility.isEmpty(x.getDepAmount())?x.getDepAmount():0).sum();
-
-		Double totalMatured = fds.stream().mapToDouble(x -> !Utility.isEmpty(x.getMaturedAmount())?x.getMaturedAmount():0).sum();
 
 		data.put("fds", fdBeans);
-		data.put("totalDeposited", totalDeposited);
-		data.put("totalMatured", totalMatured);
 
-		return new ApiResponse(HttpStatus.OK, null, data);
+		
+		if (Utility.isEmpty(fdBeans)) {
+			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
+		}
+		
+		Float totalDeposited = fdRepository.getTotalDeposited();
+		
+		Float totalMatured = fdRepository.getTotalMatured();
+		
+		data.put("fds",fdBeans);
+		data.put("totalDeposited",totalDeposited);
+		data.put("totalMatured",totalMatured);
+		
+		return new ApiResponse(HttpStatus.OK, null,data);
 	}
 
 	@Override

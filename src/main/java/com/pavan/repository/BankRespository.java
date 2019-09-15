@@ -11,8 +11,10 @@ import com.pavan.modal.Bank;
 @Repository
 public interface BankRespository extends JpaRepository<Bank, Long> {
 	public Bank findByName(String name);
-	
-	@Query(value="from Bank b order by balance desc")
+
+	@Query(value = "from Bank b order by balance desc")
 	List<Bank> getBanksOrderByBalDesc();
-	
+
+	@Query(value = "select sum(balance) from Bank")
+	public Float getTotalBalance();
 }

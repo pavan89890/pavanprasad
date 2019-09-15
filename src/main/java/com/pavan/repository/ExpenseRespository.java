@@ -14,4 +14,7 @@ public interface ExpenseRespository extends JpaRepository<Expense, Long> {
 	
 	@Query(value="from Expense order by createdOn desc")
 	public List<Expense> getExpensesOrderByDateDesc();
+
+	@Query(value = "select sum(amount) from Expense")
+	public Float getTotalExpenseAmount();
 }

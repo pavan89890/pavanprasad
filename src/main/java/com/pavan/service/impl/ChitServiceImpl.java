@@ -50,7 +50,7 @@ public class ChitServiceImpl implements ChitService {
 		
 		data.put("chits",chitBeans);
 		
-		Double totalDeposited = chits.stream().mapToDouble(x -> !Utility.isEmpty(x.getActualAmount())?x.getActualAmount():0).sum();
+		Float totalDeposited = chitRepository.getTotalDeposited();
 		
 		data.put("totalDeposited",totalDeposited);
 		data.put("totalMatured",180000);
