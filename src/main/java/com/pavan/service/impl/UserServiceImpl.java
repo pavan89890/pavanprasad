@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
+import com.pavan.beans.UserBean;
 import com.pavan.modal.User;
 import com.pavan.repository.UserRespository;
 import com.pavan.service.UserService;
+import com.pavan.util.Utility;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,23 +30,45 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ApiResponse saveUser(User user) {
+	public void saveUser(UserBean userBean) throws Exception {
+
+		if (!validData(userBean)) {
+			throw new Exception(message);
+		}
+
+		User user = new User();
+		if (userBean.getId() != null) {
+			user.setId(userBean.getId());
+		}
+		user.setName(userBean.getName());
+		user.setMobile(userBean.getMobile());
+
 		User c = usersRepository.findByMobile(user.getMobile());
 
 		if (c != null) {
 			if ((user.getId() == null) || (user.getId() != c.getId())) {
-				return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Mobile Number Already Exists", null);
+				message = "Mobile Number Already Exists";
+				throw new Exception(message);
 			}
 		}
 
-		if (user.getId() == null || user.getId() == 0) {
-			message = "User saved successfully";
-		} else {
-			message = "User updated successfully";
-		}
 		usersRepository.save(user);
 
-		return new ApiResponse(HttpStatus.OK, message, null);
+	}
+
+	private boolean validData(UserBean bean) {
+
+		if (Utility.isEmpty(bean.getName())) {
+			message = "Please Enter Name";
+			return false;
+		}
+
+		if (Utility.isEmpty(bean.getMobile())) {
+			message = "Please Enter Mobile";
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override

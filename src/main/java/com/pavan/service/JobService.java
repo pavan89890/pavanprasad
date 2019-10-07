@@ -3,12 +3,12 @@ package com.pavan.service;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
-import com.pavan.modal.Job;
+import com.pavan.beans.JobBean;
 
 @Service
 public interface JobService {
 
-	public ApiResponse saveJob(Job job);
+	public void saveJob(JobBean job) throws Exception;
 
 	public ApiResponse getJobs();
 

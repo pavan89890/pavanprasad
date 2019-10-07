@@ -27,17 +27,17 @@ public class ChitServiceImpl implements ChitService {
 
 	@Override
 	public ApiResponse getChits() {
-		Map<String,Object> data=new LinkedHashMap<>();
-		
-		List<Chit> chits=chitRepository.getChitsOrderByYearDesc();
-		List<ChitBean> chitBeans=new ArrayList<>();
-		
+		Map<String, Object> data = new LinkedHashMap<>();
+
+		List<Chit> chits = chitRepository.getChitsOrderByYearDesc();
+		List<ChitBean> chitBeans = new ArrayList<>();
+
 		if (Utility.isEmpty(chits)) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
-		}else {
-			
+		} else {
+
 			for (Chit chit : chits) {
-				ChitBean bean=new ChitBean();
+				ChitBean bean = new ChitBean();
 				bean.setId(chit.getId());
 				bean.setMonth(chit.getMonth());
 				bean.setMonthStr(Utility.getMonthName(chit.getMonth()));
@@ -47,35 +47,70 @@ public class ChitServiceImpl implements ChitService {
 				bean.setProfit(chit.getProfit());
 			}
 		}
-		
-		data.put("chits",chitBeans);
-		
+
+		data.put("chits", chitBeans);
+
 		Float totalDeposited = chitRepository.getTotalDeposited();
-		
-		data.put("totalDeposited",totalDeposited);
-		data.put("totalMatured",180000);
-		
-		return new ApiResponse(HttpStatus.OK, null,data);
+
+		data.put("totalDeposited", totalDeposited);
+		data.put("totalMatured", 180000);
+
+		return new ApiResponse(HttpStatus.OK, null, data);
 	}
 
 	@Override
-	public ApiResponse saveChit(Chit chit) {
-		Chit c = chitRepository.findByMonthAndYear(chit.getMonth(),chit.getYear());
+	public void saveChit(ChitBean chitBean) throws Exception {
+		
+		if (!validData(chitBean)) {
+			throw new Exception(message);
+		}
+
+		Chit chit = new Chit();
+		if (chitBean.getId() != null) {
+			chit.setId(chitBean.getId());
+		}
+		chit.setMonth(chitBean.getMonth());
+		chit.setYear(chitBean.getYear());
+		chit.setActualAmount(chitBean.getActualAmount());
+		chit.setPaidAmount(chitBean.getPaidAmount());
+		chit.setProfit(chit.getActualAmount() - chitBean.getPaidAmount());
+
+		Chit c = chitRepository.findByMonthAndYear(chitBean.getMonth(), chitBean.getYear());
 
 		if (c != null) {
-			if ((chit.getId() == null) || (chit.getId() != c.getId())) {
-				return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Chit For Month and Year combination Already Exists", null);
+			if ((chitBean.getId() == null) || (chitBean.getId() != c.getId())) {
+				message = "Chit For Month and Year combination Already Exists";
+				throw new Exception(message);
 			}
 		}
 
-		if (chit.getId() == null || chit.getId() == 0) {
-			message = "Chit saved successfully";
-		} else {
-			message = "Chit updated successfully";
-		}
 		chitRepository.save(chit);
 
-		return new ApiResponse(HttpStatus.OK, message, null);
+	}
+	
+	private boolean validData(ChitBean bean) {
+
+		if (Utility.isEmpty(bean.getMonth())) {
+			message = "Please Select Month";
+			return false;
+		}
+
+		if (Utility.isEmpty(bean.getYear())) {
+			message = "Please Select Year";
+			return false;
+		}
+		
+		if (bean.getActualAmount()==null) {
+			message = "Please Enter Actual Amount";
+			return false;
+		}
+		
+		if (bean.getPaidAmount()==null) {
+			message = "Please Enter Paid Amount";
+			return false;
+		}
+		
+		return true;
 	}
 
 	@Override

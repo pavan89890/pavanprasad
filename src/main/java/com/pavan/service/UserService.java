@@ -3,12 +3,12 @@ package com.pavan.service;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
-import com.pavan.modal.User;
+import com.pavan.beans.UserBean;
 
 @Service
 public interface UserService {
 
-	public ApiResponse saveUser(User user);
+	public void saveUser(UserBean user) throws Exception;
 
 	public ApiResponse getUsers();
 

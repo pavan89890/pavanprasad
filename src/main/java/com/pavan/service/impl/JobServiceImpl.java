@@ -28,16 +28,51 @@ public class JobServiceImpl implements JobService {
 	private String message = "";
 
 	@Override
-	public ApiResponse saveJob(Job job) {
+	public void saveJob(JobBean jobBean) throws Exception {
 
-		if (job.getId() == null || job.getId() == 0) {
-			message = "Job saved successfully";
-		} else {
-			message = "Job updated successfully";
+		if (!validData(jobBean)) {
+			throw new Exception(message);
 		}
+
+		Job job = new Job();
+		if (jobBean.getId() != null) {
+			job.setId(jobBean.getId());
+		}
+		job.setCompany(jobBean.getCompany());
+
+		try {
+			if (!Utility.isEmpty(jobBean.getDojStr())) {
+
+				job.setDoj(Utility.yyyy_MM_dd.parse(jobBean.getDojStr()));
+
+			}
+
+			if (!Utility.isEmpty(jobBean.getDolStr())) {
+				job.setDol(Utility.yyyy_MM_dd.parse(jobBean.getDolStr()));
+			}
+
+		} catch (Exception e) {
+			message = e.getMessage();
+			throw new Exception(message);
+		}
+
 		jobsRepository.save(job);
 
-		return new ApiResponse(HttpStatus.OK, message, null);
+	}
+
+	private boolean validData(JobBean bean) {
+
+		if (Utility.isEmpty(bean.getCompany())) {
+			message = "Please Enter Company Name";
+			return false;
+		}
+
+		if (Utility.isEmpty(bean.getDojStr())) {
+			message = "Please Select DOJ";
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -83,7 +118,8 @@ public class JobServiceImpl implements JobService {
 		String totalExperience = "";
 
 		if (!Utility.isEmpty(jobs)) {
-			LocalDate firstDoj = jobs.get(jobs.size()-1).getDoj().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			LocalDate firstDoj = jobs.get(jobs.size() - 1).getDoj().toInstant().atZone(ZoneId.systemDefault())
+					.toLocalDate();
 			totalExperience = Utility.getDateDifference(firstDoj, LocalDate.now());
 		}
 

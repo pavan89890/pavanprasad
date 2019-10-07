@@ -3,12 +3,12 @@ package com.pavan.service;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
-import com.pavan.modal.Fd;
+import com.pavan.beans.FdBean;
 
 @Service
 public interface FdService {
 
-	public ApiResponse saveFd(Fd fd);
+	public void saveFd(FdBean fd) throws Exception;
 
 	public ApiResponse getFds();
 

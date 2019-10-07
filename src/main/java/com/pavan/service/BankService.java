@@ -3,12 +3,12 @@ package com.pavan.service;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
-import com.pavan.modal.Bank;
+import com.pavan.beans.BankBean;
 
 @Service
 public interface BankService {
 
-	public ApiResponse saveBank(Bank bank);
+	public void saveBank(BankBean bank) throws Exception;
 
 	public ApiResponse getBanks();
 

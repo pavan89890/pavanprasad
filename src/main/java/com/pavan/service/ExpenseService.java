@@ -3,12 +3,12 @@ package com.pavan.service;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
-import com.pavan.modal.Expense;
+import com.pavan.beans.ExpenseBean;
 
 @Service
 public interface ExpenseService {
 
-	public ApiResponse saveExpense(Expense expense);
+	public void saveExpense(ExpenseBean expenseBean) throws Exception;
 
 	public ApiResponse getExpenses();
 

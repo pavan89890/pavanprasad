@@ -1,8 +1,6 @@
 package com.pavan.rest.controller;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.FdBean;
-import com.pavan.modal.Fd;
 import com.pavan.service.FdService;
 import com.pavan.util.Utility;
 
@@ -28,50 +25,26 @@ public class FdController {
 
 	@Autowired
 	private FdService fdService;
+	private String message;
 
 	@PostMapping
+	@Transactional(rollbackOn = Exception.class)
 	public ApiResponse saveFd(@RequestBody(required = true) FdBean fdBean) {
 
-		Fd fd = new Fd();
-		if (fdBean.getId() != null) {
-			fd.setId(fdBean.getId());
-		}
-		fd.setBank(fdBean.getBank());
-		fd.setDepAmount(fdBean.getDepAmount());
-		fd.setRoi(fdBean.getRoi());
+		try {
+			fdService.saveFd(fdBean);
 
-		Float maturedAmount = 0f;
-		if (fdBean.getDepAmount() != null) {
-			maturedAmount = (fdBean.getDepAmount() * (fdBean.getRoi() / 100));
-		}
-
-		fd.setMaturedAmount(fdBean.getDepAmount() + maturedAmount);
-
-		Date depositedOn = null;
-
-		if (!Utility.isEmpty(fdBean.getDepositedOnStr())) {
-			try {
-				depositedOn = Utility.yyyy_MM_dd.parse(fdBean.getDepositedOnStr());
-			} catch (ParseException e) {
-				return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null);
+			if (Utility.isEmpty(fdBean.getId())) {
+				message = "Fd saved successfully";
+			} else {
+				message = "Fd updated successfully";
 			}
+
+			return new ApiResponse(HttpStatus.OK, message, null);
+		} catch (Exception e) {
+			message = "Error-" + e.getMessage();
+			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, null);
 		}
-
-		fd.setDepositedOn(depositedOn);
-		fd.setPeriodInMonths(fdBean.getPeriodInMonths());
-
-		Date maturedOn = null;
-
-		if (!Utility.isEmpty(depositedOn) && !Utility.isEmpty(fdBean.getPeriodInMonths())) {
-			Calendar c = Calendar.getInstance();
-			c.setTime(depositedOn);
-			c.add(Calendar.MONTH, fdBean.getPeriodInMonths());
-			maturedOn = c.getTime();
-		}
-
-		fd.setMaturedOn(maturedOn);
-
-		return fdService.saveFd(fd);
 
 	}
 

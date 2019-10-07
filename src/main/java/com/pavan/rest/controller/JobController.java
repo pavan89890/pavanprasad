@@ -1,5 +1,7 @@
 package com.pavan.rest.controller;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.JobBean;
-import com.pavan.modal.Job;
 import com.pavan.service.JobService;
 import com.pavan.util.Utility;
 
@@ -24,32 +25,26 @@ public class JobController {
 
 	@Autowired
 	private JobService jobService;
+	private String message;
 
 	@PostMapping
+	@Transactional(rollbackOn = Exception.class)
 	public ApiResponse saveJob(@RequestBody(required = true) JobBean jobBean) {
 
-		Job job = new Job();
-		if (jobBean.getId() != null) {
-			job.setId(jobBean.getId());
-		}
-		job.setCompany(jobBean.getCompany());
-
 		try {
-			if (!Utility.isEmpty(jobBean.getDojStr())) {
+			jobService.saveJob(jobBean);
 
-				job.setDoj(Utility.yyyy_MM_dd.parse(jobBean.getDojStr()));
-
+			if (Utility.isEmpty(jobBean.getId())) {
+				message = "Job saved successfully";
+			} else {
+				message = "Job updated successfully";
 			}
 
-			if (!Utility.isEmpty(jobBean.getDolStr())) {
-				job.setDol(Utility.yyyy_MM_dd.parse(jobBean.getDolStr()));
-			}
-
+			return new ApiResponse(HttpStatus.OK, message, null);
 		} catch (Exception e) {
-			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(),null);
+			message = "Error-" + e.getMessage();
+			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, null);
 		}
-
-		return jobService.saveJob(job);
 
 	}
 

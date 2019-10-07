@@ -1,8 +1,11 @@
 package com.pavan.service.impl;
 
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,17 +31,50 @@ public class FdServiceImpl implements FdService {
 	private String message = "";
 
 	@Override
-	public ApiResponse saveFd(Fd fixedDeposit) {
+	public void saveFd(FdBean fdBean) throws Exception {
 
-		if (fixedDeposit.getId() == null || fixedDeposit.getId() == 0) {
-			message = "Fixed Deposit saved successfully";
-		} else {
-			message = "Fixed Deposit updated successfully";
+		Fd fd = new Fd();
+		if (fdBean.getId() != null) {
+			fd.setId(fdBean.getId());
+		}
+		fd.setBank(fdBean.getBank());
+		fd.setDepAmount(fdBean.getDepAmount());
+		fd.setRoi(fdBean.getRoi());
+
+		Float maturedAmount = 0f;
+		if (fdBean.getDepAmount() != null) {
+			maturedAmount = (fdBean.getDepAmount() * (fdBean.getRoi() / 100));
 		}
 
-		fdRepository.save(fixedDeposit);
+		fd.setMaturedAmount(fdBean.getDepAmount() + maturedAmount);
 
-		return new ApiResponse(HttpStatus.OK, message, null);
+		Date depositedOn = null;
+
+		if (!Utility.isEmpty(fdBean.getDepositedOnStr())) {
+			try {
+				depositedOn = Utility.yyyy_MM_dd.parse(fdBean.getDepositedOnStr());
+			} catch (ParseException e) {
+				message = e.getMessage();
+				throw new Exception(message);
+			}
+		}
+
+		fd.setDepositedOn(depositedOn);
+		fd.setPeriodInMonths(fdBean.getPeriodInMonths());
+
+		Date maturedOn = null;
+
+		if (!Utility.isEmpty(depositedOn) && !Utility.isEmpty(fdBean.getPeriodInMonths())) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(depositedOn);
+			c.add(Calendar.MONTH, fdBean.getPeriodInMonths());
+			maturedOn = c.getTime();
+		}
+
+		fd.setMaturedOn(maturedOn);
+
+		fdRepository.save(fd);
+
 	}
 
 	@Override
@@ -49,7 +85,7 @@ public class FdServiceImpl implements FdService {
 		List<Fd> fds = fdRepository.findAllByOrderByMaturedOnDesc();
 
 		List<FdBean> fdBeans = new ArrayList<>();
-		
+
 		if (Utility.isEmpty(fds)) {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
 		}
@@ -83,18 +119,17 @@ public class FdServiceImpl implements FdService {
 			fdBeans.add(fdBean);
 		}
 
+		data.put("fds", fdBeans);
+
+		Float totalDeposited = fdRepository.getTotalDeposited();
+
+		Float totalMatured = fdRepository.getTotalMatured();
 
 		data.put("fds", fdBeans);
-		
-		Float totalDeposited = fdRepository.getTotalDeposited();
-		
-		Float totalMatured = fdRepository.getTotalMatured();
-		
-		data.put("fds",fdBeans);
-		data.put("totalDeposited",totalDeposited);
-		data.put("totalMatured",totalMatured);
-		
-		return new ApiResponse(HttpStatus.OK, null,data);
+		data.put("totalDeposited", totalDeposited);
+		data.put("totalMatured", totalMatured);
+
+		return new ApiResponse(HttpStatus.OK, null, data);
 	}
 
 	@Override

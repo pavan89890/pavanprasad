@@ -1,6 +1,9 @@
 package com.pavan.rest.controller;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.ExpenseBean;
-import com.pavan.modal.Expense;
 import com.pavan.service.ExpenseService;
+import com.pavan.util.Utility;
 
 @RestController
 @RequestMapping(path = "/api/expenses")
@@ -22,18 +25,26 @@ public class ExpenseController {
 
 	@Autowired
 	private ExpenseService expenseService;
+	private String message;
 
 	@PostMapping
+	@Transactional(rollbackOn = Exception.class)
 	public ApiResponse saveExpense(@RequestBody(required = true) ExpenseBean expenseBean) {
 
-		Expense expense = new Expense();
-		if (expenseBean.getId() != null) {
-			expense.setId(expenseBean.getId());
-		}
-		expense.setName(expenseBean.getName());
-		expense.setAmount(expenseBean.getAmount());
+		try {
+			expenseService.saveExpense(expenseBean);
 
-		return expenseService.saveExpense(expense);
+			if (Utility.isEmpty(expenseBean.getId())) {
+				message = "Expense saved successfully";
+			} else {
+				message = "Expense updated successfully";
+			}
+
+			return new ApiResponse(HttpStatus.OK, message, null);
+		} catch (Exception e) {
+			message = "Error-" + e.getMessage();
+			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, null);
+		}
 
 	}
 

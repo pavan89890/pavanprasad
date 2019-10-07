@@ -1,6 +1,9 @@
 package com.pavan.rest.controller;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.BankBean;
-import com.pavan.modal.Bank;
 import com.pavan.service.BankService;
+import com.pavan.util.Utility;
 
 @RestController
 @RequestMapping(path = "/api/banks")
@@ -23,17 +26,26 @@ public class BankController {
 	@Autowired
 	private BankService bankService;
 
+	private String message;
+
 	@PostMapping
+	@Transactional(rollbackOn = Exception.class)
 	public ApiResponse saveBank(@RequestBody(required = true) BankBean bankBean) {
 
-		Bank bank = new Bank();
-		if (bankBean.getId() != null) {
-			bank.setId(bankBean.getId());
-		}
-		bank.setName(bankBean.getName());
-		bank.setBalance(bankBean.getBalance());
+		try {
+			bankService.saveBank(bankBean);
 
-		return bankService.saveBank(bank);
+			if (Utility.isEmpty(bankBean.getId())) {
+				message = "Bank saved successfully";
+			} else {
+				message = "Bank updated successfully";
+			}
+
+			return new ApiResponse(HttpStatus.OK, message, null);
+		} catch (Exception e) {
+			message = "Error-" + e.getMessage();
+			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, null);
+		}
 
 	}
 
@@ -51,7 +63,7 @@ public class BankController {
 	public ApiResponse deleteBank(@PathVariable(value = "id") Long id) {
 		return bankService.deleteBank(id);
 	}
-	
+
 	@DeleteMapping
 	public ApiResponse deleteBanks() {
 		return bankService.deleteBanks();

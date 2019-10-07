@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
+import com.pavan.beans.BankBean;
 import com.pavan.modal.Bank;
 import com.pavan.repository.BankRespository;
 import com.pavan.service.BankService;
@@ -25,10 +26,10 @@ public class BankServiceImpl implements BankService {
 
 	@Override
 	public ApiResponse getBanks() {
-		
-		Map<String,Object> data=new LinkedHashMap<>();
-		
-		List<Bank> banks=bankRepository.getBanksOrderByBalDesc();
+
+		Map<String, Object> data = new LinkedHashMap<>();
+
+		List<Bank> banks = bankRepository.getBanksOrderByBalDesc();
 
 		if (Utility.isEmpty(banks)) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
@@ -43,23 +44,45 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public ApiResponse saveBank(Bank bank) {
+	public void saveBank(BankBean bankBean) throws Exception {
+
+		if (!validData(bankBean)) {
+			throw new Exception(message);
+		}
+
+		Bank bank = new Bank();
+		if (bankBean.getId() != null) {
+			bank.setId(bankBean.getId());
+		}
+		bank.setName(bankBean.getName());
+		bank.setBalance(bankBean.getBalance());
+
 		Bank c = bankRepository.findByName(bank.getName());
 
 		if (c != null) {
 			if ((bank.getId() == null) || (bank.getId() != c.getId())) {
-				return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Bank Name Already Exists", null);
+				message = "Bank Name Already Exists";
+				throw new Exception(message);
 			}
 		}
 
-		if (bank.getId() == null || bank.getId() == 0) {
-			message = "Bank saved successfully";
-		} else {
-			message = "Bank updated successfully";
-		}
 		bankRepository.save(bank);
 
-		return new ApiResponse(HttpStatus.OK, message, null);
+	}
+
+	private boolean validData(BankBean bean) {
+
+		if (Utility.isEmpty(bean.getName())) {
+			message = "Please Enter Name";
+			return false;
+		}
+
+		if (bean.getBalance()==null) {
+			message = "Please Enter Balance";
+			return false;
+		}
+		
+		return true;
 	}
 
 	@Override
