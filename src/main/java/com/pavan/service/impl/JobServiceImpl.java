@@ -45,7 +45,7 @@ public class JobServiceImpl implements JobService {
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Job> jobs = jobsRepository.getJobsOrderByDoj();
+		List<Job> jobs = jobsRepository.findAllByOrderByDojDesc();
 
 		if (Utility.isEmpty(jobs)) {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);

@@ -46,7 +46,7 @@ public class FdServiceImpl implements FdService {
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Fd> fds = fdRepository.findAll();
+		List<Fd> fds = fdRepository.findAllByOrderByMaturedOnDesc();
 
 		List<FdBean> fdBeans = new ArrayList<>();
 		
