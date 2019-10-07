@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "t_fixed_deposit")
+@Table(name = "t_job")
 public class Job extends BaseEntity {
 
 	@Id
