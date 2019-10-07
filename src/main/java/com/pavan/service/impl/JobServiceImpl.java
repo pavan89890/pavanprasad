@@ -83,8 +83,8 @@ public class JobServiceImpl implements JobService {
 		String totalExperience = "";
 
 		if (!Utility.isEmpty(jobs)) {
-			LocalDate firstDoj = jobs.get(0).getDoj().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			totalExperience = Utility.getDateDifference(firstDoj, now);
+			LocalDate firstDoj = jobs.get(jobs.size()-1).getDoj().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			totalExperience = Utility.getDateDifference(firstDoj, LocalDate.now());
 		}
 
 		data.put("jobs", jobBeans);
