@@ -17,5 +17,5 @@ public interface FdRespository extends JpaRepository<Fd, Long> {
 	@Query(value = "select sum(maturedAmount) from Fd")
 	Float getTotalMatured();
 	
-	List<Fd> findAllByOrderByMaturedOnDesc();
+	List<Fd> findAllByOrderByMaturedOn();
 }

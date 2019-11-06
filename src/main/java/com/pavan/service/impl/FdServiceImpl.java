@@ -82,7 +82,7 @@ public class FdServiceImpl implements FdService {
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Fd> fds = fdRepository.findAllByOrderByMaturedOnDesc();
+		List<Fd> fds = fdRepository.findAllByOrderByMaturedOn();
 
 		List<FdBean> fdBeans = new ArrayList<>();
 
