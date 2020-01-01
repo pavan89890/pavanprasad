@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "t_bank")
+@Table(name = "t_chit")
 public class Chit extends BaseEntity{
 
 	@Id

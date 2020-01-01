@@ -45,6 +45,7 @@ public class ChitServiceImpl implements ChitService {
 				bean.setActualAmount(chit.getActualAmount());
 				bean.setPaidAmount(chit.getPaidAmount());
 				bean.setProfit(chit.getProfit());
+				chitBeans.add(bean);
 			}
 		}
 
@@ -75,7 +76,12 @@ public class ChitServiceImpl implements ChitService {
 		chit.setPaidAmount(chitBean.getPaidAmount());
 		chit.setProfit(chit.getActualAmount() - chitBean.getPaidAmount());
 
-		Chit c = chitRepository.findByMonthAndYear(chitBean.getMonth(), chitBean.getYear());
+		Chit c=null;
+		try {
+			c = chitRepository.findByMonthAndYear(chitBean.getMonth(), chitBean.getYear());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		if (c != null) {
 			if ((chitBean.getId() == null) || (chitBean.getId() != c.getId())) {
