@@ -33,12 +33,12 @@ public class AssetServiceImpl implements AssetService {
 		Float bankBalance = bankRepository.getTotalBalance();
 		Float chitBalance = chitRepository.getTotalDeposited();
 		Float fdBalance = fdRepository.getTotalDeposited();
-		Float total = bankBalance + chitBalance + fdBalance;
+		Float totalBalance = bankBalance + chitBalance + fdBalance;
 
 		data.put("bankBalance", bankBalance);
 		data.put("chitBalance", chitBalance);
 		data.put("fdBalance", fdBalance);
-		data.put("total", total);
+		data.put("totalBalance", totalBalance);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
