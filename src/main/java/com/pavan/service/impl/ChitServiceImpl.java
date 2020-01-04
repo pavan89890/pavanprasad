@@ -54,7 +54,7 @@ public class ChitServiceImpl implements ChitService {
 		Float totalDeposited = chitRepository.getTotalDeposited();
 
 		data.put("totalDeposited", totalDeposited);
-		data.put("totalMatured", 180000);
+		data.put("totalMatured", 3*12*6000);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
