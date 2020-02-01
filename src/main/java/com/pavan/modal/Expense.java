@@ -1,5 +1,7 @@
 package com.pavan.modal;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "t_expense")
-public class Expense  extends BaseEntity{
+public class Expense extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,4 +28,7 @@ public class Expense  extends BaseEntity{
 
 	@Column(name = "AMOUNT")
 	private Float amount;
+
+	@Column(name = "EXPENSE_DATE")
+	private Date date;
 }

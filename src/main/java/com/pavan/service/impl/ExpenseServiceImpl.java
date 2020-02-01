@@ -1,5 +1,6 @@
 package com.pavan.service.impl;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,19 @@ public class ExpenseServiceImpl implements ExpenseService {
 	public ApiResponse getExpenses() {
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Expense> expenses = expenseRepository.findAll();
+		List<Expense> expenses = expenseRepository.getExpensesOrderByDateDesc();
+		List<ExpenseBean> expenseBeans = new ArrayList<ExpenseBean>();
+
+		for (Expense expense : expenses) {
+			ExpenseBean expenseBean = new ExpenseBean();
+			expenseBean.setId(expense.getId());
+			expenseBean.setName(expense.getName());
+			expenseBean.setAmount(expense.getAmount());
+			if (expense.getDate() != null) {
+				expenseBean.setExpenseDateStr(Utility.yyyy_MM_dd.format(expense.getDate()));
+			}
+			expenseBeans.add(expenseBean);
+		}
 
 		if (Utility.isEmpty(expenses)) {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
@@ -36,7 +49,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 		Float totalExpenses = expenseRepository.getTotalExpenseAmount();
 
-		data.put("expenses", expenses);
+		data.put("expenses", expenseBeans);
 		data.put("totalExpenses", totalExpenses);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
@@ -55,16 +68,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 		}
 		expense.setName(expenseBean.getName());
 		expense.setAmount(expenseBean.getAmount());
-
-		Expense c = expenseRepository.findByName(expense.getName());
-
-		if (c != null) {
-			if ((expense.getId() == null) || (expense.getId() != c.getId())) {
-				message = "Expense Name Already Exists";
-				throw new Exception(message);
-			}
+		if (!Utility.isEmpty(expenseBean.getExpenseDateStr())) {
+			expense.setDate(Utility.yyyy_MM_dd.parse(expenseBean.getExpenseDateStr()));
 		}
-
 		expenseRepository.save(expense);
 	}
 

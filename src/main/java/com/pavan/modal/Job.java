@@ -26,10 +26,16 @@ public class Job extends BaseEntity {
 	@Column(name = "COMPANY")
 	private String company;
 	
+	@Column(name = "DESIGNATION")
+	private String designation;
+	
 	@Column(name = "DOJ")
 	private Date doj;
 	
 	@Column(name = "DOL")
 	private Date dol;
+	
+	@Column(name = "CURRENT_JOB")
+	private Boolean current;
 	
 }

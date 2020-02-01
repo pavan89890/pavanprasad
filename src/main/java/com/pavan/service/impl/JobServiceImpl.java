@@ -39,7 +39,8 @@ public class JobServiceImpl implements JobService {
 			job.setId(jobBean.getId());
 		}
 		job.setCompany(jobBean.getCompany());
-
+		job.setDesignation(jobBean.getDesignation());
+		job.setCurrent(jobBean.getCurrent()==null?false:jobBean.getCurrent());
 		try {
 			if (!Utility.isEmpty(jobBean.getDojStr())) {
 
@@ -64,6 +65,11 @@ public class JobServiceImpl implements JobService {
 
 		if (Utility.isEmpty(bean.getCompany())) {
 			message = "Please Enter Company Name";
+			return false;
+		}
+		
+		if (Utility.isEmpty(bean.getDesignation())) {
+			message = "Please Enter Designation";
 			return false;
 		}
 
@@ -95,6 +101,8 @@ public class JobServiceImpl implements JobService {
 
 			jobBean.setId(job.getId());
 			jobBean.setCompany(job.getCompany());
+			jobBean.setDesignation(job.getDesignation());
+			jobBean.setCurrent(job.getCurrent()==null?false:job.getCurrent());
 
 			if (job.getDoj() != null) {
 				jobBean.setDojStr(Utility.yyyy_MM_dd.format(job.getDoj()));

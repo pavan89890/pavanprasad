@@ -31,6 +31,9 @@ public class ChitServiceImpl implements ChitService {
 
 		List<Chit> chits = chitRepository.getChitsOrderByYearDesc();
 		List<ChitBean> chitBeans = new ArrayList<>();
+		
+		Float totalDeposited = 0f;
+		Float totalProfit = 0f;
 
 		if (Utility.isEmpty(chits)) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
@@ -45,16 +48,17 @@ public class ChitServiceImpl implements ChitService {
 				bean.setActualAmount(chit.getActualAmount());
 				bean.setPaidAmount(chit.getPaidAmount());
 				bean.setProfit(chit.getProfit());
+				totalDeposited+=bean.getActualAmount();
+				totalProfit+=bean.getProfit();
 				chitBeans.add(bean);
 			}
 		}
 
 		data.put("chits", chitBeans);
 
-		Float totalDeposited = chitRepository.getTotalDeposited();
-
 		data.put("totalDeposited", totalDeposited);
 		data.put("totalMatured", 3*12*6000);
+		data.put("totalProfit", totalProfit);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}

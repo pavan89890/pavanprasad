@@ -9,4 +9,5 @@ public class ExpenseBean {
 	private Long id;
 	private String name;
 	private Float amount;
+	private String expenseDateStr;
 }

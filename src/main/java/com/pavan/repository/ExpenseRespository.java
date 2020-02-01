@@ -12,7 +12,7 @@ import com.pavan.modal.Expense;
 public interface ExpenseRespository extends JpaRepository<Expense, Long> {
 	public Expense findByName(String name);
 	
-	@Query(value="from Expense order by createdOn desc")
+	@Query(value="from Expense order by date desc")
 	public List<Expense> getExpensesOrderByDateDesc();
 
 	@Query(value = "select sum(amount) from Expense")
