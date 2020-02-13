@@ -1,5 +1,11 @@
 package com.pavan.service.impl;
 
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +29,32 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public ApiResponse getUsers() {
-		if (usersRepository.findAll() == null) {
+		List<User> users = usersRepository.findAll();
+
+		if (users == null) {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
 		}
-		return new ApiResponse(HttpStatus.OK, null, usersRepository.findAll());
+
+		List<UserBean> userBeans = new ArrayList<UserBean>();
+
+		for (User user : users) {
+			UserBean bean = new UserBean();
+			bean.setId(user.getId());
+			bean.setName(user.getName());
+			bean.setMobile(user.getMobile());
+			bean.setOriDobStr(Utility.yyyy_MM_dd.format(user.getOriDob()));
+			bean.setCerDobStr(Utility.yyyy_MM_dd.format(user.getCerDob()));
+
+			LocalDate currentDate = LocalDate.now();
+			LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			bean.setOriAgeStr(Utility.getDateDifference(oriLocalDate,currentDate));
+			bean.setCerAgeStr(Utility.getDateDifference(cerLocalDate,currentDate));
+			userBeans.add(bean);
+		}
+
+		return new ApiResponse(HttpStatus.OK, null, userBeans);
 	}
 
 	@Override
@@ -42,6 +70,28 @@ public class UserServiceImpl implements UserService {
 		}
 		user.setName(userBean.getName());
 		user.setMobile(userBean.getMobile());
+
+		Date oriDob = null, cerDob = null;
+
+		if (!Utility.isEmpty(userBean.getOriDobStr())) {
+			try {
+				oriDob = Utility.yyyy_MM_dd.parse(userBean.getOriDobStr());
+				user.setOriDob(oriDob);
+			} catch (ParseException e) {
+				message = e.getMessage();
+				throw new Exception(message);
+			}
+		}
+
+		if (!Utility.isEmpty(userBean.getCerDobStr())) {
+			try {
+				cerDob = Utility.yyyy_MM_dd.parse(userBean.getCerDobStr());
+				user.setCerDob(cerDob);
+			} catch (ParseException e) {
+				message = e.getMessage();
+				throw new Exception(message);
+			}
+		}
 
 		User c = usersRepository.findByMobile(user.getMobile());
 
@@ -80,7 +130,23 @@ public class UserServiceImpl implements UserService {
 			Optional<User> userOp = usersRepository.findById(id);
 			if (userOp.isPresent()) {
 				User user = userOp.get();
-				return new ApiResponse(HttpStatus.OK, null, user);
+				
+
+				UserBean bean = new UserBean();
+				bean.setId(user.getId());
+				bean.setName(user.getName());
+				bean.setMobile(user.getMobile());
+				bean.setOriDobStr(Utility.yyyy_MM_dd.format(user.getOriDob()));
+				bean.setCerDobStr(Utility.yyyy_MM_dd.format(user.getCerDob()));
+
+				LocalDate currentDate = LocalDate.now();
+				LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				bean.setOriAgeStr(Utility.getDateDifference(currentDate, oriLocalDate));
+				bean.setCerAgeStr(Utility.getDateDifference(currentDate, cerLocalDate));
+			
+				return new ApiResponse(HttpStatus.OK, null, bean);
 			} else {
 				return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 			}
