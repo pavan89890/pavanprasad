@@ -1,22 +1,50 @@
 package com.pavan.service.impl;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pavan.modal.Bank;
+import com.pavan.modal.Chit;
+import com.pavan.modal.Expense;
+import com.pavan.modal.Fd;
+import com.pavan.modal.Job;
+import com.pavan.modal.User;
+import com.pavan.repository.BankRespository;
+import com.pavan.repository.ChitRespository;
+import com.pavan.repository.ExpenseRespository;
+import com.pavan.repository.FdRespository;
+import com.pavan.repository.JobRespository;
+import com.pavan.repository.UserRespository;
 import com.pavan.service.DataDownloadService;
+import com.pavan.util.Utility;
 
 @Service
 public class DataDownloadServiceImpl implements DataDownloadService {
+
+	@Autowired
+	private BankRespository bankRepository;
+
+	@Autowired
+	private ChitRespository chitRepository;
+
+	@Autowired
+	private ExpenseRespository expenseRepository;
+
+	@Autowired
+	private FdRespository fdRepository;
+
+	@Autowired
+	private JobRespository jobRepository;
+
+	@Autowired
+	private UserRespository userRepository;
 
 	@Override
 	public byte[] getDataFile() {
@@ -24,33 +52,15 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		// Blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
-		// Create a blank sheet
-		XSSFSheet sheet = workbook.createSheet("Bank");
+		generateBankSheet(workbook);
+		generateFdSheet(workbook);
+		generateChitSheet(workbook);
+		generateExpenseSheet(workbook);
+		generateJobSheet(workbook);
+		generateUserSheet(workbook);
 
-		// This data needs to be written (Object[])
-		Map<String, Object[]> data = new TreeMap<String, Object[]>();
-		data.put("1", new Object[] { "ID", "NAME", "BALANCE" });
-		data.put("2", new Object[] { 1, "SBI", 4 });
-		data.put("3", new Object[] { 2, "CITI", 5 });
-
-		// Iterate over data and write to sheet
-		Set<String> keyset = data.keySet();
-		int rownum = 0;
-		for (String key : keyset) {
-			// this creates a new row in the sheet
-			Row row = sheet.createRow(rownum++);
-			Object[] objArr = data.get(key);
-			int cellnum = 0;
-			for (Object obj : objArr) {
-				// this line creates a cell in the next column of that row
-				Cell cell = row.createCell(cellnum++);
-				if (obj instanceof String)
-					cell.setCellValue((String) obj);
-				else if (obj instanceof Integer)
-					cell.setCellValue((Integer) obj);
-			}
-		}
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
 		try {
 			workbook.write(bos);
 		} catch (Exception e) {
@@ -60,4 +70,142 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		byte[] bytes = bos.toByteArray();
 		return bytes;
 	}
+
+	private void generateBankSheet(XSSFWorkbook workbook) {
+		// Create Bank sheet
+		XSSFSheet sheet = workbook.createSheet("Bank");
+
+		String headers[] = new String[] { "ID", "NAME", "BALANCE", "CREATED_ON", "UPDATED_ON" };
+		
+		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+
+		Utility.createExcelHeader(sheet, headers,headerStyle);
+
+		List<Object[]> data = new ArrayList<Object[]>();
+
+		List<Bank> banks = bankRepository.findAll();
+
+		for (Bank bank : banks) {
+			data.add(new Object[] { bank.getId(), bank.getName(), bank.getBalance(), bank.getCreatedOn().toString(),
+					bank.getUpdatedOn().toString() });
+		}
+
+		Utility.createExcelRows(sheet, data);
+	}
+
+	private void generateChitSheet(XSSFWorkbook workbook) {
+		// Create Bank sheet
+		XSSFSheet sheet = workbook.createSheet("Chit");
+
+		String headers[] = new String[] { "ID", "MONTH", "YEAR", "ACTUAL_AMOUNT", "PAID_AMOUNT", "PROFIT", "CREATED_ON",
+				"UPDATED_ON" };
+
+		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+
+		Utility.createExcelHeader(sheet, headers,headerStyle);
+
+		List<Object[]> data = new ArrayList<Object[]>();
+
+		List<Chit> chits = chitRepository.findAll();
+
+		for (Chit chit : chits) {
+			data.add(new Object[] { chit.getId(), chit.getMonth(), chit.getYear(), chit.getActualAmount(),
+					chit.getPaidAmount(), chit.getProfit(), chit.getCreatedOn().toString(),
+					chit.getUpdatedOn().toString() });
+		}
+
+		Utility.createExcelRows(sheet, data);
+	}
+
+	private void generateExpenseSheet(XSSFWorkbook workbook) {
+		// Create Bank sheet
+		XSSFSheet sheet = workbook.createSheet("Expense");
+
+		String headers[] = new String[] { "ID", "NAME", "AMOUNT", "EXPENSE_DATE", "CREATED_ON", "UPDATED_ON" };
+
+		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+
+		Utility.createExcelHeader(sheet, headers,headerStyle);
+
+		List<Object[]> data = new ArrayList<Object[]>();
+
+		List<Expense> expenses = expenseRepository.findAll();
+
+		for (Expense expense : expenses) {
+			data.add(new Object[] { expense.getId(), expense.getName(), expense.getAmount(), expense.getDate(),
+					expense.getCreatedOn().toString(), expense.getUpdatedOn().toString() });
+		}
+
+		Utility.createExcelRows(sheet, data);
+	}
+
+	private void generateFdSheet(XSSFWorkbook workbook) {
+		// Create Bank sheet
+		XSSFSheet sheet = workbook.createSheet("Fd");
+
+		String headers[] = new String[] { "ID", "BANK", "DEP_AMOUNT", "ROI", "MAT_AMOUNT", "DEPOSITED_ON",
+				"PERIOD_IN_MONTHS", "MATURED_ON", "CREATED_ON", "UPDATED_ON" };
+
+		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+
+		Utility.createExcelHeader(sheet, headers,headerStyle);
+
+		List<Object[]> data = new ArrayList<Object[]>();
+
+		List<Fd> fds = fdRepository.findAll();
+
+		for (Fd fd : fds) {
+			data.add(new Object[] { fd.getId(), fd.getBank(), fd.getDepAmount(), fd.getRoi(), fd.getMaturedAmount(),
+					fd.getDepositedOn(), fd.getPeriodInMonths(), fd.getMaturedOn(), fd.getCreatedOn().toString(),
+					fd.getUpdatedOn().toString() });
+		}
+
+		Utility.createExcelRows(sheet, data);
+	}
+
+	private void generateJobSheet(XSSFWorkbook workbook) {
+		// Create Job sheet
+		XSSFSheet sheet = workbook.createSheet("Job");
+
+		String headers[] = new String[] { "ID", "COMPANY", "DESIGNATION", "DOJ", "DOL", "CURRENT_JOB", "CREATED_ON",
+				"UPDATED_ON" };
+
+		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+
+		Utility.createExcelHeader(sheet, headers,headerStyle);
+
+		List<Object[]> data = new ArrayList<Object[]>();
+
+		List<Job> jobs = jobRepository.findAll();
+
+		for (Job job : jobs) {
+			data.add(new Object[] { job.getId(), job.getCompany(), job.getDesignation(), job.getDoj(), job.getDol(),
+					job.getCurrent(), job.getCreatedOn().toString(), job.getUpdatedOn().toString() });
+		}
+
+		Utility.createExcelRows(sheet, data);
+	}
+
+	private void generateUserSheet(XSSFWorkbook workbook) {
+		// Create Job sheet
+		XSSFSheet sheet = workbook.createSheet("User");
+
+		String headers[] = new String[] { "ID", "NAME", "MOBILE", "ORI_DOB", "CER_DOB", "CREATED_ON", "UPDATED_ON" };
+
+		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+
+		Utility.createExcelHeader(sheet, headers,headerStyle);
+
+		List<Object[]> data = new ArrayList<Object[]>();
+
+		List<User> users = userRepository.findAll();
+
+		for (User user : users) {
+			data.add(new Object[] { user.getId(), user.getName(), user.getMobile(), user.getOriDob(), user.getCerDob(),
+					user.getCreatedOn().toString(), user.getUpdatedOn().toString() });
+		}
+
+		Utility.createExcelRows(sheet, data);
+	}
+
 }
