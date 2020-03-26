@@ -18,6 +18,8 @@ public class Utility {
 
 	public static final SimpleDateFormat yyyy_MM_dd = new SimpleDateFormat("yyyy-MM-dd");
 
+	public static final SimpleDateFormat MM_dd = new SimpleDateFormat("MM-dd");
+
 	public static final String[] monthNames = { "January", "February", "March", "April", "May", "June", "July",
 			"August", "September", "October", "November", "December" };
 
@@ -94,13 +96,33 @@ public class Utility {
 			}
 		}
 	}
-	
+
 	public static CellStyle getHeaderStyle(XSSFWorkbook workbook) {
 		CellStyle headerStyle = workbook.createCellStyle();
 		Font font = workbook.createFont();
 		font.setBold(true);
 		headerStyle.setFont(font);
 		return headerStyle;
+	}
+
+	public static boolean isCurrentDate(Date date1, Date date2) {
+		if (date1 != null && date2 != null) {
+			String dateStr1 = Utility.yyyy_MM_dd.format(date1);
+			String dateStr2 = Utility.yyyy_MM_dd.format(date2);
+			return dateStr1.equals(dateStr2);
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean isCurrentDateAndMonth(Date date1, Date date2) {
+		if (date1 != null && date2 != null) {
+			String dateStr1 = Utility.MM_dd.format(date1);
+			String dateStr2 = Utility.MM_dd.format(date2);
+			return dateStr1.equals(dateStr2);
+		} else {
+			return false;
+		}
 	}
 
 }
