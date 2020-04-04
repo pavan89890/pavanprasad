@@ -3,7 +3,6 @@ package com.pavan.service.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,14 +54,16 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 	@Override
 	public byte[] downloadData() {
-
-		ByteArrayOutputStream bos = prepareData();
-
-		byte[] bytes = bos.toByteArray();
+		byte[] bytes = null;
 		try {
+			ByteArrayOutputStream bos = prepareData();
+
+			bytes = bos.toByteArray();
+
 			bos.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 		return bytes;
 	}
@@ -87,7 +88,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		new Utility().deleteFiles(files);
 	}
 
-	private ByteArrayOutputStream prepareData() {
+	private ByteArrayOutputStream prepareData() throws Exception {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -99,11 +100,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		generateJobSheet(workbook);
 		generateUserSheet(workbook);
 
-		try {
-			workbook.write(bos);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		workbook.write(bos);
+
 		return bos;
 	}
 
@@ -122,8 +120,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		List<Bank> banks = bankRepository.findAll();
 
 		for (Bank bank : banks) {
-			data.add(new Object[] { bank.getId(), bank.getName(), bank.getBalance(), bank.getCreatedOn().toString(),
-					bank.getUpdatedOn().toString() });
+			data.add(new Object[] { bank.getId(), bank.getName(), bank.getBalance(),
+					bank.getCreatedOn() != null ? bank.getCreatedOn().toString() : null,
+					bank.getUpdatedOn() != null ? bank.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);
@@ -146,8 +145,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (Chit chit : chits) {
 			data.add(new Object[] { chit.getId(), chit.getMonth(), chit.getYear(), chit.getActualAmount(),
-					chit.getPaidAmount(), chit.getProfit(), chit.getCreatedOn().toString(),
-					chit.getUpdatedOn().toString() });
+					chit.getPaidAmount(), chit.getProfit(),
+					chit.getCreatedOn() != null ? chit.getCreatedOn().toString() : null,
+					chit.getUpdatedOn() != null ? chit.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);
@@ -169,7 +169,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (Expense expense : expenses) {
 			data.add(new Object[] { expense.getId(), expense.getName(), expense.getAmount(), expense.getDate(),
-					expense.getCreatedOn().toString(), expense.getUpdatedOn().toString() });
+					expense.getCreatedOn() != null ? expense.getCreatedOn().toString() : null,
+					expense.getUpdatedOn() != null ? expense.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);
@@ -192,8 +193,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (Fd fd : fds) {
 			data.add(new Object[] { fd.getId(), fd.getBank(), fd.getDepAmount(), fd.getRoi(), fd.getMaturedAmount(),
-					fd.getDepositedOn(), fd.getPeriodInMonths(), fd.getMaturedOn(), fd.getCreatedOn().toString(),
-					fd.getUpdatedOn().toString() });
+					fd.getDepositedOn(), fd.getPeriodInMonths(), fd.getMaturedOn(),
+					fd.getCreatedOn() != null ? fd.getCreatedOn().toString() : null,
+					fd.getUpdatedOn() != null ? fd.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);
@@ -216,7 +218,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (Job job : jobs) {
 			data.add(new Object[] { job.getId(), job.getCompany(), job.getDesignation(), job.getDoj(), job.getDol(),
-					job.getCurrent(), job.getCreatedOn().toString(), job.getUpdatedOn().toString() });
+					job.getCurrent(), job.getCreatedOn() != null ? job.getCreatedOn().toString() : null,
+					job.getUpdatedOn() != null ? job.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);
@@ -238,7 +241,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (User user : users) {
 			data.add(new Object[] { user.getId(), user.getName(), user.getMobile(), user.getOriDob(), user.getCerDob(),
-					user.getCreatedOn().toString(), user.getUpdatedOn().toString() });
+					user.getCreatedOn() != null ? user.getCreatedOn().toString() : null,
+					user.getUpdatedOn() != null ? user.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);

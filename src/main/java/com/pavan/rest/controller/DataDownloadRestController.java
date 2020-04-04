@@ -34,7 +34,7 @@ public class DataDownloadRestController {
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=PavanPrasadData.xlsx");
-		header.setContentLength(excelContent.length);
+		header.setContentLength(excelContent != null ? excelContent.length : 0);
 
 		return new HttpEntity<byte[]>(excelContent, header);
 	}
