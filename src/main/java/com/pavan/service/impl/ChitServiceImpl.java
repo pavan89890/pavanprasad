@@ -15,6 +15,7 @@ import com.pavan.beans.ChitBean;
 import com.pavan.modal.Chit;
 import com.pavan.repository.ChitRespository;
 import com.pavan.service.ChitService;
+import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -43,7 +44,7 @@ public class ChitServiceImpl implements ChitService {
 				ChitBean bean = new ChitBean();
 				bean.setId(chit.getId());
 				bean.setMonth(chit.getMonth());
-				bean.setMonthStr(Utility.getMonthName(chit.getMonth()));
+				bean.setMonthStr(DateUtil.getMonthName(chit.getMonth()));
 				bean.setYear(chit.getYear());
 				bean.setActualAmount(chit.getActualAmount());
 				bean.setPaidAmount(chit.getPaidAmount());

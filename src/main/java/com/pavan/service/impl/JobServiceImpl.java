@@ -17,6 +17,7 @@ import com.pavan.beans.JobBean;
 import com.pavan.modal.Job;
 import com.pavan.repository.JobRespository;
 import com.pavan.service.JobService;
+import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -44,12 +45,12 @@ public class JobServiceImpl implements JobService {
 		try {
 			if (!Utility.isEmpty(jobBean.getDojStr())) {
 
-				job.setDoj(Utility.yyyy_MM_dd.parse(jobBean.getDojStr()));
+				job.setDoj(DateUtil.yyyy_MM_dd.parse(jobBean.getDojStr()));
 
 			}
 
 			if (!Utility.isEmpty(jobBean.getDolStr())) {
-				job.setDol(Utility.yyyy_MM_dd.parse(jobBean.getDolStr()));
+				job.setDol(DateUtil.yyyy_MM_dd.parse(jobBean.getDolStr()));
 			}
 
 		} catch (Exception e) {
@@ -105,11 +106,11 @@ public class JobServiceImpl implements JobService {
 			jobBean.setCurrent(job.getCurrent()==null?false:job.getCurrent());
 
 			if (job.getDoj() != null) {
-				jobBean.setDojStr(Utility.yyyy_MM_dd.format(job.getDoj()));
+				jobBean.setDojStr(DateUtil.yyyy_MM_dd.format(job.getDoj()));
 			}
 
 			if (job.getDol() != null) {
-				jobBean.setDolStr(Utility.yyyy_MM_dd.format(job.getDol()));
+				jobBean.setDolStr(DateUtil.yyyy_MM_dd.format(job.getDol()));
 			}
 
 			LocalDate date1 = job.getDoj().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -118,7 +119,7 @@ public class JobServiceImpl implements JobService {
 				now = job.getDol().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			}
 
-			jobBean.setExperience(Utility.getDateDifference(date1, now));
+			jobBean.setExperience(DateUtil.getDateDifference(date1, now));
 
 			jobBeans.add(jobBean);
 		}
@@ -128,7 +129,7 @@ public class JobServiceImpl implements JobService {
 		if (!Utility.isEmpty(jobs)) {
 			LocalDate firstDoj = jobs.get(jobs.size() - 1).getDoj().toInstant().atZone(ZoneId.systemDefault())
 					.toLocalDate();
-			totalExperience = Utility.getDateDifference(firstDoj, LocalDate.now());
+			totalExperience = DateUtil.getDateDifference(firstDoj, LocalDate.now());
 		}
 
 		data.put("jobs", jobBeans);

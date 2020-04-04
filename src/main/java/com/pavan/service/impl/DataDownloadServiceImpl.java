@@ -1,7 +1,11 @@
 package com.pavan.service.impl;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -23,6 +27,9 @@ import com.pavan.repository.FdRespository;
 import com.pavan.repository.JobRespository;
 import com.pavan.repository.UserRespository;
 import com.pavan.service.DataDownloadService;
+import com.pavan.util.DateUtil;
+import com.pavan.util.EmailUtil;
+import com.pavan.util.ExcelUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -47,9 +54,42 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 	private UserRespository userRepository;
 
 	@Override
-	public byte[] getDataFile() {
+	public byte[] downloadData() {
 
-		// Blank workbook
+		ByteArrayOutputStream bos = prepareData();
+
+		byte[] bytes = bos.toByteArray();
+		try {
+			bos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return bytes;
+	}
+
+	@Override
+	public void mailData() throws Exception {
+		ByteArrayOutputStream bos = prepareData();
+
+		FileOutputStream fos = null;
+
+		List<File> files = new ArrayList<File>();
+		String fileName = "PavanPrasadData_" + DateUtil.fileCreationDateFormat.format(new Date()) + ".xlsx";
+		File file = new File(fileName);
+		files.add(file);
+
+		fos = new FileOutputStream(file);
+		bos.writeTo(fos);
+		EmailUtil.sendMailWithAttachment("pavan89890@gmail.com", "Pavan Prasad Application Data Excel",
+				"Hi Pavan,<br>Please find attached Pavan Prasad Application Data in excel format.", files);
+		bos.close();
+		fos.close();
+		new Utility().deleteFiles(files);
+	}
+
+	private ByteArrayOutputStream prepareData() {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		generateBankSheet(workbook);
@@ -59,16 +99,12 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		generateJobSheet(workbook);
 		generateUserSheet(workbook);
 
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
 		try {
 			workbook.write(bos);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		byte[] bytes = bos.toByteArray();
-		return bytes;
+		return bos;
 	}
 
 	private void generateBankSheet(XSSFWorkbook workbook) {
@@ -76,10 +112,10 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		XSSFSheet sheet = workbook.createSheet("Bank");
 
 		String headers[] = new String[] { "ID", "NAME", "BALANCE", "CREATED_ON", "UPDATED_ON" };
-		
-		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
 
-		Utility.createExcelHeader(sheet, headers,headerStyle);
+		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
+
+		ExcelUtil.createExcelHeader(sheet, headers, headerStyle);
 
 		List<Object[]> data = new ArrayList<Object[]>();
 
@@ -90,7 +126,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 					bank.getUpdatedOn().toString() });
 		}
 
-		Utility.createExcelRows(sheet, data);
+		ExcelUtil.createExcelRows(sheet, data);
 	}
 
 	private void generateChitSheet(XSSFWorkbook workbook) {
@@ -100,9 +136,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		String headers[] = new String[] { "ID", "MONTH", "YEAR", "ACTUAL_AMOUNT", "PAID_AMOUNT", "PROFIT", "CREATED_ON",
 				"UPDATED_ON" };
 
-		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
-		Utility.createExcelHeader(sheet, headers,headerStyle);
+		ExcelUtil.createExcelHeader(sheet, headers, headerStyle);
 
 		List<Object[]> data = new ArrayList<Object[]>();
 
@@ -114,7 +150,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 					chit.getUpdatedOn().toString() });
 		}
 
-		Utility.createExcelRows(sheet, data);
+		ExcelUtil.createExcelRows(sheet, data);
 	}
 
 	private void generateExpenseSheet(XSSFWorkbook workbook) {
@@ -123,9 +159,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		String headers[] = new String[] { "ID", "NAME", "AMOUNT", "EXPENSE_DATE", "CREATED_ON", "UPDATED_ON" };
 
-		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
-		Utility.createExcelHeader(sheet, headers,headerStyle);
+		ExcelUtil.createExcelHeader(sheet, headers, headerStyle);
 
 		List<Object[]> data = new ArrayList<Object[]>();
 
@@ -136,7 +172,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 					expense.getCreatedOn().toString(), expense.getUpdatedOn().toString() });
 		}
 
-		Utility.createExcelRows(sheet, data);
+		ExcelUtil.createExcelRows(sheet, data);
 	}
 
 	private void generateFdSheet(XSSFWorkbook workbook) {
@@ -146,9 +182,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		String headers[] = new String[] { "ID", "BANK", "DEP_AMOUNT", "ROI", "MAT_AMOUNT", "DEPOSITED_ON",
 				"PERIOD_IN_MONTHS", "MATURED_ON", "CREATED_ON", "UPDATED_ON" };
 
-		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
-		Utility.createExcelHeader(sheet, headers,headerStyle);
+		ExcelUtil.createExcelHeader(sheet, headers, headerStyle);
 
 		List<Object[]> data = new ArrayList<Object[]>();
 
@@ -160,7 +196,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 					fd.getUpdatedOn().toString() });
 		}
 
-		Utility.createExcelRows(sheet, data);
+		ExcelUtil.createExcelRows(sheet, data);
 	}
 
 	private void generateJobSheet(XSSFWorkbook workbook) {
@@ -170,9 +206,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		String headers[] = new String[] { "ID", "COMPANY", "DESIGNATION", "DOJ", "DOL", "CURRENT_JOB", "CREATED_ON",
 				"UPDATED_ON" };
 
-		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
-		Utility.createExcelHeader(sheet, headers,headerStyle);
+		ExcelUtil.createExcelHeader(sheet, headers, headerStyle);
 
 		List<Object[]> data = new ArrayList<Object[]>();
 
@@ -183,7 +219,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 					job.getCurrent(), job.getCreatedOn().toString(), job.getUpdatedOn().toString() });
 		}
 
-		Utility.createExcelRows(sheet, data);
+		ExcelUtil.createExcelRows(sheet, data);
 	}
 
 	private void generateUserSheet(XSSFWorkbook workbook) {
@@ -192,9 +228,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		String headers[] = new String[] { "ID", "NAME", "MOBILE", "ORI_DOB", "CER_DOB", "CREATED_ON", "UPDATED_ON" };
 
-		CellStyle headerStyle = Utility.getHeaderStyle(workbook);
+		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
-		Utility.createExcelHeader(sheet, headers,headerStyle);
+		ExcelUtil.createExcelHeader(sheet, headers, headerStyle);
 
 		List<Object[]> data = new ArrayList<Object[]>();
 
@@ -205,7 +241,6 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 					user.getCreatedOn().toString(), user.getUpdatedOn().toString() });
 		}
 
-		Utility.createExcelRows(sheet, data);
+		ExcelUtil.createExcelRows(sheet, data);
 	}
-
 }

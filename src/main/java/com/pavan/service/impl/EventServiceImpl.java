@@ -17,6 +17,7 @@ import com.pavan.beans.EventBean;
 import com.pavan.modal.Events;
 import com.pavan.repository.EventRepository;
 import com.pavan.service.EventService;
+import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -61,7 +62,7 @@ public class EventServiceImpl implements EventService {
 			String eventDateStr = null;
 
 			if (!Utility.isEmpty(event.getEventDate())) {
-				eventDateStr = Utility.yyyy_MM_dd.format(event.getEventDate());
+				eventDateStr = DateUtil.yyyy_MM_dd.format(event.getEventDate());
 			}
 
 			bean.setEventDateStr(eventDateStr);
@@ -70,7 +71,7 @@ public class EventServiceImpl implements EventService {
 
 			Date date2 = event.getEventDate();
 
-			bean.setToday(Utility.isCurrentDateAndMonth(date1, date2));
+			bean.setToday(DateUtil.isCurrentDateAndMonth(date1, date2));
 
 			return bean;
 		}
@@ -97,7 +98,7 @@ public class EventServiceImpl implements EventService {
 
 		if (!Utility.isEmpty(eventBean.getEventDateStr())) {
 			try {
-				eventDate = Utility.yyyy_MM_dd.parse(eventBean.getEventDateStr());
+				eventDate = DateUtil.yyyy_MM_dd.parse(eventBean.getEventDateStr());
 			} catch (ParseException e) {
 				message = e.getMessage();
 				throw new Exception(message);

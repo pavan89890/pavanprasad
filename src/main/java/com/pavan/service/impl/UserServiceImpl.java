@@ -17,6 +17,7 @@ import com.pavan.beans.UserBean;
 import com.pavan.modal.User;
 import com.pavan.repository.UserRespository;
 import com.pavan.service.UserService;
+import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -42,15 +43,15 @@ public class UserServiceImpl implements UserService {
 			bean.setId(user.getId());
 			bean.setName(user.getName());
 			bean.setMobile(user.getMobile());
-			bean.setOriDobStr(Utility.yyyy_MM_dd.format(user.getOriDob()));
-			bean.setCerDobStr(Utility.yyyy_MM_dd.format(user.getCerDob()));
+			bean.setOriDobStr(DateUtil.yyyy_MM_dd.format(user.getOriDob()));
+			bean.setCerDobStr(DateUtil.yyyy_MM_dd.format(user.getCerDob()));
 
 			LocalDate currentDate = LocalDate.now();
 			LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-			bean.setOriAgeStr(Utility.getDateDifference(oriLocalDate,currentDate));
-			bean.setCerAgeStr(Utility.getDateDifference(cerLocalDate,currentDate));
+			bean.setOriAgeStr(DateUtil.getDateDifference(oriLocalDate,currentDate));
+			bean.setCerAgeStr(DateUtil.getDateDifference(cerLocalDate,currentDate));
 			userBeans.add(bean);
 		}
 
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
 		if (!Utility.isEmpty(userBean.getOriDobStr())) {
 			try {
-				oriDob = Utility.yyyy_MM_dd.parse(userBean.getOriDobStr());
+				oriDob = DateUtil.yyyy_MM_dd.parse(userBean.getOriDobStr());
 				user.setOriDob(oriDob);
 			} catch (ParseException e) {
 				message = e.getMessage();
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
 		if (!Utility.isEmpty(userBean.getCerDobStr())) {
 			try {
-				cerDob = Utility.yyyy_MM_dd.parse(userBean.getCerDobStr());
+				cerDob = DateUtil.yyyy_MM_dd.parse(userBean.getCerDobStr());
 				user.setCerDob(cerDob);
 			} catch (ParseException e) {
 				message = e.getMessage();
@@ -136,15 +137,15 @@ public class UserServiceImpl implements UserService {
 				bean.setId(user.getId());
 				bean.setName(user.getName());
 				bean.setMobile(user.getMobile());
-				bean.setOriDobStr(Utility.yyyy_MM_dd.format(user.getOriDob()));
-				bean.setCerDobStr(Utility.yyyy_MM_dd.format(user.getCerDob()));
+				bean.setOriDobStr(DateUtil.yyyy_MM_dd.format(user.getOriDob()));
+				bean.setCerDobStr(DateUtil.yyyy_MM_dd.format(user.getCerDob()));
 
 				LocalDate currentDate = LocalDate.now();
 				LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-				bean.setOriAgeStr(Utility.getDateDifference(currentDate, oriLocalDate));
-				bean.setCerAgeStr(Utility.getDateDifference(currentDate, cerLocalDate));
+				bean.setOriAgeStr(DateUtil.getDateDifference(currentDate, oriLocalDate));
+				bean.setCerAgeStr(DateUtil.getDateDifference(currentDate, cerLocalDate));
 			
 				return new ApiResponse(HttpStatus.OK, null, bean);
 			} else {

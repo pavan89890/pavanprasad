@@ -20,6 +20,7 @@ import com.pavan.beans.FdBean;
 import com.pavan.modal.Fd;
 import com.pavan.repository.FdRespository;
 import com.pavan.service.FdService;
+import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -52,7 +53,7 @@ public class FdServiceImpl implements FdService {
 
 		if (!Utility.isEmpty(fdBean.getDepositedOnStr())) {
 			try {
-				depositedOn = Utility.yyyy_MM_dd.parse(fdBean.getDepositedOnStr());
+				depositedOn = DateUtil.yyyy_MM_dd.parse(fdBean.getDepositedOnStr());
 			} catch (ParseException e) {
 				message = e.getMessage();
 				throw new Exception(message);
@@ -97,22 +98,23 @@ public class FdServiceImpl implements FdService {
 			fdBean.setBank(fd.getBank());
 			fdBean.setDepAmount(fd.getDepAmount());
 			fdBean.setRoi(fd.getRoi());
+
 			fdBean.setMaturedAmount(fd.getMaturedAmount());
 
 			if (fd.getDepositedOn() != null) {
-				fdBean.setDepositedOnStr(Utility.yyyy_MM_dd.format(fd.getDepositedOn()));
+				fdBean.setDepositedOnStr(DateUtil.yyyy_MM_dd.format(fd.getDepositedOn()));
 			}
 
 			fdBean.setPeriodInMonths(fd.getPeriodInMonths());
 
 			if (fd.getMaturedOn() != null) {
-				fdBean.setMaturedOnStr(Utility.yyyy_MM_dd.format(fd.getMaturedOn()));
+				fdBean.setMaturedOnStr(DateUtil.yyyy_MM_dd.format(fd.getMaturedOn()));
 
 				LocalDate date1 = LocalDate.now();
 
 				LocalDate date2 = fd.getMaturedOn().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-				fdBean.setRemainingTime(Utility.getDateDifference(date1, date2));
+				fdBean.setRemainingTime(DateUtil.getDateDifference(date1, date2));
 
 			}
 
