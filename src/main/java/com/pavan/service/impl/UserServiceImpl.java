@@ -45,15 +45,21 @@ public class UserServiceImpl implements UserService {
 			bean.setEmail(user.getEmail());
 			bean.setPassword(user.getPassword());
 			bean.setMobile(user.getMobile());
-			bean.setOriDobStr(DateUtil.yyyy_MM_dd.format(user.getOriDob()));
-			bean.setCerDobStr(DateUtil.yyyy_MM_dd.format(user.getCerDob()));
 
 			LocalDate currentDate = LocalDate.now();
-			LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-			bean.setOriAgeStr(DateUtil.getDateDifference(oriLocalDate,currentDate));
-			bean.setCerAgeStr(DateUtil.getDateDifference(cerLocalDate,currentDate));
+			if (user.getOriDob() != null) {
+				bean.setOriDobStr(DateUtil.yyyy_MM_dd.format(user.getOriDob()));
+				LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				bean.setOriAgeStr(DateUtil.getDateDifference(oriLocalDate, currentDate));
+			}
+
+			if (user.getCerDob() != null) {
+				bean.setCerDobStr(DateUtil.yyyy_MM_dd.format(user.getCerDob()));
+				LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				bean.setCerAgeStr(DateUtil.getDateDifference(cerLocalDate, currentDate));
+			}
+
 			userBeans.add(bean);
 		}
 
@@ -122,6 +128,11 @@ public class UserServiceImpl implements UserService {
 			message = "Please Enter Mobile";
 			return false;
 		}
+		
+		if (Utility.isEmpty(bean.getPassword())) {
+			message = "Please Enter Password";
+			return false;
+		}
 
 		return true;
 	}
@@ -135,7 +146,6 @@ public class UserServiceImpl implements UserService {
 			Optional<User> userOp = usersRepository.findById(id);
 			if (userOp.isPresent()) {
 				User user = userOp.get();
-				
 
 				UserBean bean = new UserBean();
 				bean.setId(user.getId());
@@ -150,7 +160,7 @@ public class UserServiceImpl implements UserService {
 
 				bean.setOriAgeStr(DateUtil.getDateDifference(currentDate, oriLocalDate));
 				bean.setCerAgeStr(DateUtil.getDateDifference(currentDate, cerLocalDate));
-			
+
 				return new ApiResponse(HttpStatus.OK, null, bean);
 			} else {
 				return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);

@@ -8,4 +8,5 @@ import com.pavan.modal.User;
 @Repository
 public interface UserRespository extends JpaRepository<User, Long> {
 	public User findByMobile(String mobile);
+	public User findByEmailAndPassword(String username,String password);
 }
