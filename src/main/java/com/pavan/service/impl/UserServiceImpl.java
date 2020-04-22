@@ -42,6 +42,8 @@ public class UserServiceImpl implements UserService {
 			UserBean bean = new UserBean();
 			bean.setId(user.getId());
 			bean.setName(user.getName());
+			bean.setEmail(user.getEmail());
+			bean.setPassword(user.getPassword());
 			bean.setMobile(user.getMobile());
 			bean.setOriDobStr(DateUtil.yyyy_MM_dd.format(user.getOriDob()));
 			bean.setCerDobStr(DateUtil.yyyy_MM_dd.format(user.getCerDob()));
@@ -70,7 +72,9 @@ public class UserServiceImpl implements UserService {
 			user.setId(userBean.getId());
 		}
 		user.setName(userBean.getName());
+		user.setEmail(userBean.getEmail());
 		user.setMobile(userBean.getMobile());
+		user.setPassword(userBean.getPassword());
 
 		Date oriDob = null, cerDob = null;
 

@@ -39,6 +39,7 @@ public class FdServiceImpl implements FdService {
 			fd.setId(fdBean.getId());
 		}
 		fd.setBank(fdBean.getBank());
+		fd.setFdrNo(fdBean.getFdrNo());
 		fd.setDepAmount(fdBean.getDepAmount());
 		fd.setRoi(fdBean.getRoi());
 
@@ -96,6 +97,7 @@ public class FdServiceImpl implements FdService {
 
 			fdBean.setId(fd.getId());
 			fdBean.setBank(fd.getBank());
+			fdBean.setFdrNo(fd.getFdrNo());
 			fdBean.setDepAmount(fd.getDepAmount());
 			fdBean.setRoi(fd.getRoi());
 

@@ -8,6 +8,7 @@ import lombok.Setter;
 public class FdBean {
 	private Long id;
 	private String bank;
+	private String fdrNo;
 	private Float depAmount;
 	private Float roi;
 	private Float maturedAmount;

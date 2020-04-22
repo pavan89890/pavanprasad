@@ -25,6 +25,9 @@ public class Fd extends BaseEntity {
 
 	@Column(name = "BANK")
 	private String bank;
+	
+	@Column(name = "FDR_NO")
+	private String fdrNo;
 
 	@Column(name = "DEP_AMOUNT")
 	private Float depAmount;
