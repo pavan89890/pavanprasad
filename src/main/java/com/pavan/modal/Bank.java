@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "T_BANK_BALANCE")
-public class Bank extends BaseEntity{
+public class Bank extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,4 +26,5 @@ public class Bank extends BaseEntity{
 
 	@Column(name = "BALANCE")
 	private Float balance;
+
 }

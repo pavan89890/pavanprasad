@@ -17,7 +17,7 @@ import com.pavan.service.DataDownloadService;
 @RestController
 @RequestMapping(path = "/api/data/")
 @CrossOrigin("*")
-public class DataDownloadRestController {
+public class DataDownloadController {
 
 	@Autowired
 	private DataDownloadService dataDownloadService;

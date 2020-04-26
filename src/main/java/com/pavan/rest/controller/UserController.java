@@ -21,7 +21,7 @@ import com.pavan.util.Utility;
 @RestController
 @RequestMapping(path = "/api/users")
 @CrossOrigin("*")
-public class UserRestController {
+public class UserController {
 
 	@Autowired
 	private UserService userService;

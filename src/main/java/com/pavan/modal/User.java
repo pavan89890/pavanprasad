@@ -28,13 +28,13 @@ public class User extends BaseEntity {
 
 	@Column(name = "NAME")
 	private String name;
-	
+
 	@Column(name = "EMAIL")
 	private String email;
 
 	@Column(name = "MOBILE")
 	private String mobile;
-	
+
 	@Column(name = "PASSWORD")
 	private String password;
 

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.BankBean;
+import com.pavan.modal.User;
 
 @Service
 public interface BankService {
@@ -17,5 +18,7 @@ public interface BankService {
 	public ApiResponse deleteBank(Long id);
 
 	public ApiResponse deleteBanks();
+
+	public ApiResponse getBanks(User currentUser);
 
 }

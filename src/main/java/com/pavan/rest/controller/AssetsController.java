@@ -12,7 +12,7 @@ import com.pavan.service.AssetService;
 @RestController
 @RequestMapping(path = "/api/assets")
 @CrossOrigin("*")
-public class AssetsRestController {
+public class AssetsController {
 
 	@Autowired
 	private AssetService assetService;

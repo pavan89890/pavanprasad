@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.BankBean;
 import com.pavan.modal.Bank;
+import com.pavan.modal.User;
 import com.pavan.repository.BankRespository;
 import com.pavan.service.BankService;
 import com.pavan.util.Utility;
@@ -26,6 +27,25 @@ public class BankServiceImpl implements BankService {
 
 	@Override
 	public ApiResponse getBanks() {
+
+		Map<String, Object> data = new LinkedHashMap<>();
+
+		List<Bank> banks = bankRepository.getBanksOrderByBalDesc();
+
+		if (Utility.isEmpty(banks)) {
+			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
+		}
+
+		Float totalBalance = bankRepository.getTotalBalance();
+
+		data.put("banks", banks);
+		data.put("totalBalance", totalBalance);
+
+		return new ApiResponse(HttpStatus.OK, null, data);
+	}
+
+	@Override
+	public ApiResponse getBanks(User currentUser) {
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
@@ -77,11 +97,11 @@ public class BankServiceImpl implements BankService {
 			return false;
 		}
 
-		if (bean.getBalance()==null) {
+		if (bean.getBalance() == null) {
 			message = "Please Enter Balance";
 			return false;
 		}
-		
+
 		return true;
 	}
 

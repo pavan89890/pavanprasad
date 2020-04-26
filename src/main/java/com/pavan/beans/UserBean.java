@@ -15,4 +15,5 @@ public class UserBean {
 	private String cerDobStr;
 	private String oriAgeStr;
 	private String cerAgeStr;
+	private String userToken;
 }

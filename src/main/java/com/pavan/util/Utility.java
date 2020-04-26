@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+
 public class Utility {
 
 	public static boolean isEmpty(Object obj) {
@@ -35,6 +37,26 @@ public class Utility {
 		for (File file : files) {
 			file.delete();
 		}
+	}
+
+	public static String encrypt(String input) {
+		String encrypted = "";
+		if (input != null && input.length() > 0) {
+			encrypted = Base64.encode(input.getBytes());
+		}
+		return encrypted;
+	}
+
+	public static String decrypt(String input) {
+		String decrypted = null;
+		if (input != null && input.length() > 0) {
+			try {
+				decrypted = new String(Base64.decode(input));
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return decrypted;
 	}
 
 }
