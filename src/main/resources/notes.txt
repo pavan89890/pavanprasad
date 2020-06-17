@@ -1,10 +1,6 @@
 Tasks:
 1)Create new branch with user id integration in backend and checkin the code.
-2)Events screen wrap text of description column.
-3)Events screen sort by month,date of event date asc.
-4)Fixed deposits display profit at summary level.
-5)Fixed deposits display profit at individual level.
-6)Expenses order by expense date,created on desc.
-7)Issue solving with excel data download at angular side.
-8)Amount format with 2 decimal points in all the screens.
-9)Date format with 17-Sep-1993.
+2)Events screen sort by date of event date asc.
+3)Issue solving with excel data download at angular side.
+4)Amount format with 2 decimal points in all the screens.
+5)Date format with 17-Sep-1993.
