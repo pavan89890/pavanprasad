@@ -58,7 +58,7 @@ public class BankServiceImpl implements BankService {
 		bank.setBalance(bankBean.getBalance());
 		bank.setUser(currentUser);
 
-		Bank c = bankRepository.findByNameAndUserId(bank.getName(),currentUser.getId());
+		Bank c = bankRepository.findByUserAndName(currentUser,bank.getName());
 
 		if (c != null) {
 			if ((bank.getId() == null) || (bank.getId() != c.getId())) {
