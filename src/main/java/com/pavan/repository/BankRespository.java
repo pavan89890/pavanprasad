@@ -11,7 +11,7 @@ import com.pavan.modal.User;
 
 @Repository
 public interface BankRespository extends JpaRepository<Bank, Long> {
-	public Bank findByName(String name);
+	public Bank findByNameAndUserId(String name,Long id);
 
 	@Query(value = "from Bank b where b.user=:user order by balance desc")
 	List<Bank> getBanksOrderByBalDesc(User user);
