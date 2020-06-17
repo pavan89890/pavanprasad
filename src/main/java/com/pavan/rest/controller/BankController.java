@@ -36,18 +36,26 @@ public class BankController {
 
 	@PostMapping
 	@Transactional(rollbackOn = Exception.class)
-	public ApiResponse saveBank(@RequestBody(required = true) BankBean bankBean) {
+	public ApiResponse saveBank(@RequestHeader("userToken") String userToken,
+			@RequestBody(required = true) BankBean bankBean) {
 
 		try {
-			bankService.saveBank(bankBean);
 
-			if (Utility.isEmpty(bankBean.getId())) {
-				message = "Bank saved successfully";
+			User currentUser = loginService.getUserFromToken(userToken);
+			if (currentUser != null) {
+				bankService.saveBank(currentUser,bankBean);
+
+				if (Utility.isEmpty(bankBean.getId())) {
+					message = "Bank saved successfully";
+				} else {
+					message = "Bank updated successfully";
+				}
+
+				return new ApiResponse(HttpStatus.OK, message, null);
 			} else {
-				message = "Bank updated successfully";
+				return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
 			}
 
-			return new ApiResponse(HttpStatus.OK, message, null);
 		} catch (Exception e) {
 			message = "Error-" + e.getMessage();
 			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, null);
@@ -57,8 +65,8 @@ public class BankController {
 
 	@GetMapping
 	public ApiResponse banks(@RequestHeader("userToken") String userToken) {
-		User currentUser=loginService.getUserFromToken(userToken); 
-		if(currentUser!=null){
+		User currentUser = loginService.getUserFromToken(userToken);
+		if (currentUser != null) {
 			return bankService.getBanks(currentUser);
 		} else {
 			return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
@@ -66,17 +74,39 @@ public class BankController {
 	}
 
 	@GetMapping("/{id}")
-	public ApiResponse getBank(@PathVariable(value = "id") Long id) {
-		return bankService.getBank(id);
+	public ApiResponse getBank(@RequestHeader("userToken") String userToken,@PathVariable(value = "id") Long id) {
+		User currentUser = loginService.getUserFromToken(userToken);
+		if (currentUser != null) {
+			return bankService.getBank(currentUser,id);
+		} else {
+			return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
+		}
+	
 	}
 
 	@DeleteMapping("/{id}")
-	public ApiResponse deleteBank(@PathVariable(value = "id") Long id) {
-		return bankService.deleteBank(id);
+	public ApiResponse deleteBank(@RequestHeader("userToken") String userToken,@PathVariable(value = "id") Long id) {
+
+		User currentUser = loginService.getUserFromToken(userToken);
+		if (currentUser != null) {
+			return bankService.deleteBank(currentUser,id);
+		} else {
+			return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
+		}
+	
+	
 	}
 
 	@DeleteMapping
-	public ApiResponse deleteBanks() {
-		return bankService.deleteBanks();
+	public ApiResponse deleteBanks(@RequestHeader("userToken") String userToken) {
+
+		User currentUser = loginService.getUserFromToken(userToken);
+		if (currentUser != null) {
+			return bankService.deleteBanks(currentUser);
+		} else {
+			return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
+		}
+	
+	
 	}
 }

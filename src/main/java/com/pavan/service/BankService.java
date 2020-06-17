@@ -9,16 +9,14 @@ import com.pavan.modal.User;
 @Service
 public interface BankService {
 
-	public void saveBank(BankBean bank) throws Exception;
-
-	public ApiResponse getBanks();
-
-	public ApiResponse getBank(Long id);
-
-	public ApiResponse deleteBank(Long id);
-
-	public ApiResponse deleteBanks();
+	public void saveBank(User currentUser, BankBean bank) throws Exception;
 
 	public ApiResponse getBanks(User currentUser);
+
+	public ApiResponse getBank(User currentUser, Long id);
+
+	public ApiResponse deleteBank(User currentUser, Long id);
+
+	public ApiResponse deleteBanks(User currentUser);
 
 }

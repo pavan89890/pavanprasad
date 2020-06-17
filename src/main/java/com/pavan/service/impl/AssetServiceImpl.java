@@ -31,7 +31,7 @@ public class AssetServiceImpl implements AssetService{
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		Float bankBalance = bankRepository.getTotalBalance();
+		Float bankBalance = bankRepository.getTotalBalance(currentUser);
 		Float chitBalance = chitRepository.getTotalDeposited();
 		Float fdBalance = fdRepository.getTotalDeposited();
 		Float totalBalance = bankBalance + chitBalance + fdBalance;

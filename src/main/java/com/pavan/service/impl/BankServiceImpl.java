@@ -3,7 +3,6 @@ package com.pavan.service.impl;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,36 +25,17 @@ public class BankServiceImpl implements BankService {
 	private String message = "";
 
 	@Override
-	public ApiResponse getBanks() {
-
-		Map<String, Object> data = new LinkedHashMap<>();
-
-		List<Bank> banks = bankRepository.getBanksOrderByBalDesc();
-
-		if (Utility.isEmpty(banks)) {
-			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
-		}
-
-		Float totalBalance = bankRepository.getTotalBalance();
-
-		data.put("banks", banks);
-		data.put("totalBalance", totalBalance);
-
-		return new ApiResponse(HttpStatus.OK, null, data);
-	}
-
-	@Override
 	public ApiResponse getBanks(User currentUser) {
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Bank> banks = bankRepository.getBanksOrderByBalDesc();
+		List<Bank> banks = bankRepository.getBanksOrderByBalDesc(currentUser);
 
 		if (Utility.isEmpty(banks)) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		}
 
-		Float totalBalance = bankRepository.getTotalBalance();
+		Float totalBalance = bankRepository.getTotalBalance(currentUser);
 
 		data.put("banks", banks);
 		data.put("totalBalance", totalBalance);
@@ -64,7 +44,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public void saveBank(BankBean bankBean) throws Exception {
+	public void saveBank(User currentUser,BankBean bankBean) throws Exception {
 
 		if (!validData(bankBean)) {
 			throw new Exception(message);
@@ -76,6 +56,7 @@ public class BankServiceImpl implements BankService {
 		}
 		bank.setName(bankBean.getName());
 		bank.setBalance(bankBean.getBalance());
+		bank.setUser(currentUser);
 
 		Bank c = bankRepository.findByName(bank.getName());
 
@@ -106,14 +87,13 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public ApiResponse getBank(Long id) {
+	public ApiResponse getBank(User currentUser,Long id) {
 		if (id == null || id == 0) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
 
-			Optional<Bank> bankOp = bankRepository.findById(id);
-			if (bankOp.isPresent()) {
-				Bank bank = bankOp.get();
+			Bank bank = bankRepository.findByUserAndId(currentUser,id);
+			if (bank!=null) {
 				return new ApiResponse(HttpStatus.OK, null, bank);
 			} else {
 				return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
@@ -122,18 +102,18 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public ApiResponse deleteBank(Long id) {
-		if (getBank(id).getData() == null) {
+	public ApiResponse deleteBank(User currentUser,Long id) {
+		if (getBank(currentUser,id).getData() == null) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
-			bankRepository.delete((Bank) getBank(id).getData());
+			bankRepository.delete((Bank) getBank(currentUser,id).getData());
 			message = "Bank deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}
 	}
 
 	@Override
-	public ApiResponse deleteBanks() {
+	public ApiResponse deleteBanks(User currentUser) {
 		bankRepository.deleteAll();
 		message = "Banks deleted successfully";
 		return new ApiResponse(HttpStatus.OK, message, null);
