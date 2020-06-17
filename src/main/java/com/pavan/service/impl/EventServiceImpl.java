@@ -33,7 +33,7 @@ public class EventServiceImpl implements EventService {
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Events> events = eventRepository.getEventsOrderByDateDesc();
+		List<Events> events = eventRepository.getEventsOrderByDateAsc();
 		List<EventBean> eventBeans = new ArrayList<EventBean>();
 
 		for (Events event : events) {
