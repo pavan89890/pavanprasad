@@ -16,4 +16,5 @@ public class FdBean {
 	private Integer periodInMonths;
 	private String maturedOnStr;
 	private String remainingTime;
+	private Float profit;
 }
