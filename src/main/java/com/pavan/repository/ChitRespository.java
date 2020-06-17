@@ -17,5 +17,5 @@ public interface ChitRespository extends JpaRepository<Chit, Long> {
 	List<Chit> getChitsOrderByYearDesc();
 
 	@Query(value = "select sum(actualAmount) from Chit")
-	public float getTotalDeposited();
+	public Float getTotalDeposited();
 }

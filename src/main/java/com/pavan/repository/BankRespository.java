@@ -19,8 +19,5 @@ public interface BankRespository extends JpaRepository<Bank, Long> {
 	@Query(value = "select sum(balance) from Bank where user=:user")
 	public Float getTotalBalance(User user);
 	
-	@Query(value = "select sum(balance) from Bank")
-	public Float getTotalBalance();
-
 	public Bank findByUserAndId(User currentUser, Long id);
 }

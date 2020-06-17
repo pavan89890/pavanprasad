@@ -61,7 +61,7 @@ public class BankServiceImpl implements BankService {
 		Bank c = bankRepository.findByUserAndName(currentUser,bank.getName());
 
 		if (c != null) {
-			if ((bank.getId() == null) || (bank.getId() != c.getId())) {
+			if ((bank.getId() == null) || (bank.getId().longValue() != c.getId().longValue())) {
 				message = "Bank Name Already Exists";
 				throw new Exception(message);
 			}

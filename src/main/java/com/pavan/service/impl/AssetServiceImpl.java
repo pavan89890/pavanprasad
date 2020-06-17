@@ -15,7 +15,7 @@ import com.pavan.repository.FdRespository;
 import com.pavan.service.AssetService;
 
 @Service
-public class AssetServiceImpl implements AssetService{
+public class AssetServiceImpl implements AssetService {
 
 	@Autowired
 	BankRespository bankRepository;
@@ -34,11 +34,12 @@ public class AssetServiceImpl implements AssetService{
 		Float bankBalance = bankRepository.getTotalBalance(currentUser);
 		Float chitBalance = chitRepository.getTotalDeposited();
 		Float fdBalance = fdRepository.getTotalDeposited();
-		Float totalBalance = bankBalance + chitBalance + fdBalance;
+		Float totalBalance = (bankBalance != null ? bankBalance : 0f) + (chitBalance != null ? chitBalance : 0f)
+				+ (fdBalance != null ? fdBalance : 0f);
 
-		data.put("bankBalance", bankBalance);
-		data.put("chitBalance", chitBalance);
-		data.put("fdBalance", fdBalance);
+		data.put("bankBalance", bankBalance != null ? bankBalance : 0f);
+		data.put("chitBalance", chitBalance != null ? chitBalance : 0f);
+		data.put("fdBalance", fdBalance != null ? fdBalance : 0f);
 		data.put("totalBalance", totalBalance);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
