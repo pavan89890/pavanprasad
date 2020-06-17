@@ -5,3 +5,4 @@ Tasks:
 4)Fixed deposits display profit at summary level.
 5)Fixed deposits display profit at individual level.
 6)Expenses order by expense date,created on desc.
+7)Issue solving with excel data download at angular side.
