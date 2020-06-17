@@ -12,10 +12,10 @@ import com.pavan.modal.Fd;
 public interface FdRespository extends JpaRepository<Fd, Long> {
 
 	@Query(value = "select sum(depAmount) from Fd")
-	Float getTotalDeposited();
+	float getTotalDeposited();
 	
 	@Query(value = "select sum(maturedAmount) from Fd")
-	Float getTotalMatured();
+	float getTotalMatured();
 	
 	List<Fd> findAllByOrderByMaturedOn();
 }
