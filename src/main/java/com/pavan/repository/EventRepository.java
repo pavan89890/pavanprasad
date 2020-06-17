@@ -13,8 +13,8 @@ public interface EventRepository extends JpaRepository<Events, Long> {
 
 	List<Events> findByEventType(String eventType);
 
-	@Query(value = "from Events e order by eventDate desc")
-	List<Events> getEventsOrderByDateDesc();
+	@Query(value = "from Events e order by month(eventDate) asc,date(eventDate) asc")
+	List<Events> getEventsOrderByDateAsc();
 
 	Events findByEventName(String eventName);
 
