@@ -119,6 +119,8 @@ public class FdServiceImpl implements FdService {
 				fdBean.setRemainingTime(DateUtil.getDateDifference(date1, date2));
 
 			}
+			
+			fdBean.setProfit(fdBean.getMaturedAmount()-fdBean.getDepAmount());
 
 			fdBeans.add(fdBean);
 		}
@@ -128,10 +130,13 @@ public class FdServiceImpl implements FdService {
 		Float totalDeposited = fdRepository.getTotalDeposited();
 
 		Float totalMatured = fdRepository.getTotalMatured();
+		
+		Float totalProfit=totalMatured-totalDeposited;
 
 		data.put("fds", fdBeans);
 		data.put("totalDeposited", totalDeposited);
 		data.put("totalMatured", totalMatured);
+		data.put("totalProfit", totalProfit);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
