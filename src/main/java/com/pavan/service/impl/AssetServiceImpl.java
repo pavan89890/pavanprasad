@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
 import com.pavan.modal.User;
-import com.pavan.repository.BankRespository;
-import com.pavan.repository.ChitRespository;
+import com.pavan.repository.BankRepository;
+import com.pavan.repository.ChitRepository;
 import com.pavan.repository.FdRespository;
 import com.pavan.service.AssetService;
 
@@ -18,13 +18,13 @@ import com.pavan.service.AssetService;
 public class AssetServiceImpl implements AssetService {
 
 	@Autowired
-	BankRespository bankRepository;
+	BankRepository bankRepository;
 
 	@Autowired
 	FdRespository fdRepository;
 
 	@Autowired
-	ChitRespository chitRepository;
+	ChitRepository chitRepository;
 
 	@Override
 	public ApiResponse getAssets(User currentUser) {
@@ -32,8 +32,8 @@ public class AssetServiceImpl implements AssetService {
 		Map<String, Object> data = new LinkedHashMap<>();
 
 		Float bankBalance = bankRepository.getTotalBalance(currentUser);
-		Float chitBalance = chitRepository.getTotalDeposited();
-		Float fdBalance = fdRepository.getTotalDeposited();
+		Float chitBalance = chitRepository.getTotalDeposited(currentUser);
+		Float fdBalance = fdRepository.getTotalDeposited(currentUser);
 		Float totalBalance = (bankBalance != null ? bankBalance : 0f) + (chitBalance != null ? chitBalance : 0f)
 				+ (fdBalance != null ? fdBalance : 0f);
 

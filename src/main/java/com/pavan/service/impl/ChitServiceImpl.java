@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.ChitBean;
 import com.pavan.modal.Chit;
-import com.pavan.repository.ChitRespository;
+import com.pavan.modal.User;
+import com.pavan.repository.ChitRepository;
 import com.pavan.service.ChitService;
 import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
@@ -22,17 +23,17 @@ import com.pavan.util.Utility;
 public class ChitServiceImpl implements ChitService {
 
 	@Autowired
-	ChitRespository chitRepository;
+	ChitRepository chitRepository;
 
 	private String message = "";
 
 	@Override
-	public ApiResponse getChits() {
+	public ApiResponse getChits(User currentUser) {
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Chit> chits = chitRepository.getChitsOrderByYearDesc();
+		List<Chit> chits = chitRepository.getUserChitsOrderByYearDesc(currentUser);
 		List<ChitBean> chitBeans = new ArrayList<>();
-		
+
 		Float totalDeposited = 0f;
 		Float totalProfit = 0f;
 
@@ -49,8 +50,8 @@ public class ChitServiceImpl implements ChitService {
 				bean.setActualAmount(chit.getActualAmount());
 				bean.setPaidAmount(chit.getPaidAmount());
 				bean.setProfit(chit.getProfit());
-				totalDeposited+=bean.getActualAmount();
-				totalProfit+=bean.getProfit();
+				totalDeposited += bean.getActualAmount();
+				totalProfit += bean.getProfit();
 				chitBeans.add(bean);
 			}
 		}
@@ -58,15 +59,15 @@ public class ChitServiceImpl implements ChitService {
 		data.put("chits", chitBeans);
 
 		data.put("totalDeposited", totalDeposited);
-		data.put("totalMatured", 3*12*6000);
+		data.put("totalMatured", 3 * 12 * 6000);
 		data.put("totalProfit", totalProfit);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
 
 	@Override
-	public void saveChit(ChitBean chitBean) throws Exception {
-		
+	public void saveChit(User currentUser, ChitBean chitBean) throws Exception {
+
 		if (!validData(chitBean)) {
 			throw new Exception(message);
 		}
@@ -80,16 +81,17 @@ public class ChitServiceImpl implements ChitService {
 		chit.setActualAmount(chitBean.getActualAmount());
 		chit.setPaidAmount(chitBean.getPaidAmount());
 		chit.setProfit(chit.getActualAmount() - chitBean.getPaidAmount());
+		chit.setUser(currentUser);
 
-		Chit c=null;
+		Chit c = null;
 		try {
-			c = chitRepository.findByMonthAndYear(chitBean.getMonth(), chitBean.getYear());
+			c = chitRepository.findByUserAndMonthAndYear(currentUser, chitBean.getMonth(), chitBean.getYear());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		if (c != null) {
-			if ((chitBean.getId() == null) || (chitBean.getId() != c.getId())) {
+			if ((chitBean.getId() == null) || (chitBean.getId().longValue() != c.getId().longValue())) {
 				message = "Chit For Month and Year combination Already Exists";
 				throw new Exception(message);
 			}
@@ -98,7 +100,7 @@ public class ChitServiceImpl implements ChitService {
 		chitRepository.save(chit);
 
 	}
-	
+
 	private boolean validData(ChitBean bean) {
 
 		if (Utility.isEmpty(bean.getMonth())) {
@@ -110,17 +112,17 @@ public class ChitServiceImpl implements ChitService {
 			message = "Please Select Year";
 			return false;
 		}
-		
-		if (bean.getActualAmount()==null) {
+
+		if (bean.getActualAmount() == null) {
 			message = "Please Enter Actual Amount";
 			return false;
 		}
-		
-		if (bean.getPaidAmount()==null) {
+
+		if (bean.getPaidAmount() == null) {
 			message = "Please Enter Paid Amount";
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -152,10 +154,16 @@ public class ChitServiceImpl implements ChitService {
 	}
 
 	@Override
-	public ApiResponse deleteChits() {
-		chitRepository.deleteAll();
-		message = "Chits deleted successfully";
+	public ApiResponse deleteChits(User currentUser) {
+		if (currentUser != null) {
+			chitRepository.deleteByUser(currentUser);
+			message = "Hi " + currentUser.getName() + ",all your chits deleted successfully";
+		} else {
+			chitRepository.deleteAll();
+			message = "Chits deleted successfully";
+		}
 		return new ApiResponse(HttpStatus.OK, message, null);
+
 	}
 
 }

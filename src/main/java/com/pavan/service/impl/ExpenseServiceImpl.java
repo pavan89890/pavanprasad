@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.ExpenseBean;
 import com.pavan.modal.Expense;
-import com.pavan.repository.ExpenseRespository;
+import com.pavan.modal.User;
+import com.pavan.repository.ExpenseRepository;
 import com.pavan.service.ExpenseService;
 import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
@@ -22,17 +23,24 @@ import com.pavan.util.Utility;
 public class ExpenseServiceImpl implements ExpenseService {
 
 	@Autowired
-	ExpenseRespository expenseRepository;
+	ExpenseRepository expenseRepository;
 
 	private String message = "";
 
 	@Override
-	public ApiResponse getExpenses() {
+	public ApiResponse getExpenses(User user, String expenseType) {
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Expense> expenses = expenseRepository.getExpensesOrderByDateDesc();
+		List<Expense> expenses = null;
+		if (!Utility.isEmpty(expenseType)) {
+			expenses = expenseRepository.getUserExpensesByTypeOrderByDateDesc(expenseType,user);
+		} else {
+			expenses = expenseRepository.getUserExpensesOrderByDateDesc(user);
+		}
+
 		List<ExpenseBean> expenseBeans = new ArrayList<ExpenseBean>();
 
+		Float totalExpense=0f;
 		for (Expense expense : expenses) {
 			ExpenseBean expenseBean = new ExpenseBean();
 			expenseBean.setId(expense.getId());
@@ -41,6 +49,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 			if (expense.getDate() != null) {
 				expenseBean.setExpenseDateStr(DateUtil.yyyy_MM_dd.format(expense.getDate()));
 			}
+			expenseBean.setExpenseType(expense.getExpenseType());
+			totalExpense+=expenseBean.getAmount()!=null?expense.getAmount():0f;
 			expenseBeans.add(expenseBean);
 		}
 
@@ -48,16 +58,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
 		}
 
-		Float totalExpenses = expenseRepository.getTotalExpenseAmount();
-
 		data.put("expenses", expenseBeans);
-		data.put("totalExpenses", totalExpenses);
+		data.put("totalExpenses", totalExpense);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
 
 	@Override
-	public void saveExpense(ExpenseBean expenseBean) throws Exception {
+	public void saveExpense(User user, ExpenseBean expenseBean) throws Exception {
 
 		if (!validData(expenseBean)) {
 			throw new Exception(message);
@@ -67,6 +75,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 		if (expenseBean.getId() != null) {
 			expense.setId(expenseBean.getId());
 		}
+		expense.setUser(user);
+		expense.setExpenseType(expenseBean.getExpenseType());
 		expense.setName(expenseBean.getName());
 		expense.setAmount(expenseBean.getAmount());
 		if (!Utility.isEmpty(expenseBean.getExpenseDateStr())) {
@@ -118,9 +128,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public ApiResponse deleteExpenses() {
-		expenseRepository.deleteAll();
-		message = "Expenses deleted successfully";
+	public ApiResponse deleteExpenses(User user) {
+		if (user != null) {
+			expenseRepository.deleteByUser(user);
+			message = "Hi " + user.getName() + ",all your events deleted successfully";
+		} else {
+			expenseRepository.deleteAll();
+			message = "Expenses deleted successfully";
+		}
 		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 

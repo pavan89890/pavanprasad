@@ -4,18 +4,19 @@ import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.JobBean;
+import com.pavan.modal.User;
 
 @Service
 public interface JobService {
 
-	public void saveJob(JobBean job) throws Exception;
+	public void saveJob(User user,JobBean job) throws Exception;
 
-	public ApiResponse getJobs();
+	public ApiResponse getJobs(User user);
 
 	public ApiResponse getJob(Long id);
 
 	public ApiResponse deleteJob(Long id);
 
-	public ApiResponse deleteJobs();
+	public ApiResponse deleteJobs(User user);
 
 }

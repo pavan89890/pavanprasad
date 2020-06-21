@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class ExpenseBean {
 	private Long id;
+	private String expenseType;
 	private String name;
 	private Float amount;
 	private String expenseDateStr;

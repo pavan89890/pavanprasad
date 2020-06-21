@@ -12,7 +12,7 @@ import com.pavan.beans.ApiResponse;
 import com.pavan.beans.BankBean;
 import com.pavan.modal.Bank;
 import com.pavan.modal.User;
-import com.pavan.repository.BankRespository;
+import com.pavan.repository.BankRepository;
 import com.pavan.service.BankService;
 import com.pavan.util.Utility;
 
@@ -20,7 +20,7 @@ import com.pavan.util.Utility;
 public class BankServiceImpl implements BankService {
 
 	@Autowired
-	BankRespository bankRepository;
+	BankRepository bankRepository;
 
 	private String message = "";
 
@@ -44,7 +44,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public void saveBank(User currentUser,BankBean bankBean) throws Exception {
+	public void saveBank(User currentUser, BankBean bankBean) throws Exception {
 
 		if (!validData(bankBean)) {
 			throw new Exception(message);
@@ -58,7 +58,7 @@ public class BankServiceImpl implements BankService {
 		bank.setBalance(bankBean.getBalance());
 		bank.setUser(currentUser);
 
-		Bank c = bankRepository.findByUserAndName(currentUser,bank.getName());
+		Bank c = bankRepository.findByUserAndName(currentUser, bank.getName());
 
 		if (c != null) {
 			if ((bank.getId() == null) || (bank.getId().longValue() != c.getId().longValue())) {
@@ -87,13 +87,13 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public ApiResponse getBank(User currentUser,Long id) {
+	public ApiResponse getBank(Long id) {
 		if (id == null || id == 0) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
 
-			Bank bank = bankRepository.findByUserAndId(currentUser,id);
-			if (bank!=null) {
+			Bank bank = bankRepository.getOne(id);
+			if (bank != null) {
 				return new ApiResponse(HttpStatus.OK, null, bank);
 			} else {
 				return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
@@ -102,11 +102,11 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public ApiResponse deleteBank(User currentUser,Long id) {
-		if (getBank(currentUser,id).getData() == null) {
+	public ApiResponse deleteBank(Long id) {
+		if (getBank(id).getData() == null) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
-			bankRepository.delete((Bank) getBank(currentUser,id).getData());
+			bankRepository.deleteById(id);
 			message = "Bank deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}
@@ -114,8 +114,13 @@ public class BankServiceImpl implements BankService {
 
 	@Override
 	public ApiResponse deleteBanks(User currentUser) {
-		bankRepository.deleteAll();
-		message = "Banks deleted successfully";
+		if (currentUser != null) {
+			bankRepository.deleteByUser(currentUser);
+			message = "Hi " + currentUser.getName() + ",all your banks deleted successfully";
+		}else {
+			bankRepository.deleteAll();
+			message = "Banks deleted successfully";
+		}
 		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 

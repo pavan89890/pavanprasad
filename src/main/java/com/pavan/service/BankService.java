@@ -13,9 +13,9 @@ public interface BankService {
 
 	public ApiResponse getBanks(User currentUser);
 
-	public ApiResponse getBank(User currentUser, Long id);
+	public ApiResponse getBank(Long id);
 
-	public ApiResponse deleteBank(User currentUser, Long id);
+	public ApiResponse deleteBank(Long id);
 
 	public ApiResponse deleteBanks(User currentUser);
 

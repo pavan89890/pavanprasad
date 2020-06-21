@@ -44,6 +44,6 @@ public class User extends BaseEntity {
 	@Column(name = "CER_DOB")
 	private Date cerDob;
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY,targetEntity = UserEducation.class)
 	private List<UserEducation> userEducations;
 }

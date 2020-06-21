@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.JobBean;
 import com.pavan.modal.Job;
+import com.pavan.modal.User;
 import com.pavan.repository.JobRespository;
 import com.pavan.service.JobService;
 import com.pavan.util.DateUtil;
@@ -29,7 +30,7 @@ public class JobServiceImpl implements JobService {
 	private String message = "";
 
 	@Override
-	public void saveJob(JobBean jobBean) throws Exception {
+	public void saveJob(User currentUser,JobBean jobBean) throws Exception {
 
 		if (!validData(jobBean)) {
 			throw new Exception(message);
@@ -39,6 +40,7 @@ public class JobServiceImpl implements JobService {
 		if (jobBean.getId() != null) {
 			job.setId(jobBean.getId());
 		}
+		job.setUser(currentUser);
 		job.setCompany(jobBean.getCompany());
 		job.setDesignation(jobBean.getDesignation());
 		job.setCurrent(jobBean.getCurrent()==null?false:jobBean.getCurrent());
@@ -83,11 +85,11 @@ public class JobServiceImpl implements JobService {
 	}
 
 	@Override
-	public ApiResponse getJobs() {
+	public ApiResponse getJobs(User currentUser) {
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Job> jobs = jobsRepository.findAllByOrderByDojDesc();
+		List<Job> jobs = jobsRepository.findByUserOrderByDojDesc(currentUser);
 
 		if (Utility.isEmpty(jobs)) {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
@@ -166,9 +168,14 @@ public class JobServiceImpl implements JobService {
 	}
 
 	@Override
-	public ApiResponse deleteJobs() {
-		jobsRepository.deleteAll();
-		message = "Jobs deleted successfully";
+	public ApiResponse deleteJobs(User currentUser) {
+		if (currentUser != null) {
+			jobsRepository.deleteByUser(currentUser);
+			message = "Hi "+currentUser.getName()+", Jobs deleted successfully";
+		} else {
+			jobsRepository.deleteAll();
+			message = "Jobs deleted successfully";
+		}
 		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 

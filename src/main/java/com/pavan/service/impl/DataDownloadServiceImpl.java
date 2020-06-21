@@ -19,9 +19,9 @@ import com.pavan.modal.Expense;
 import com.pavan.modal.Fd;
 import com.pavan.modal.Job;
 import com.pavan.modal.User;
-import com.pavan.repository.BankRespository;
-import com.pavan.repository.ChitRespository;
-import com.pavan.repository.ExpenseRespository;
+import com.pavan.repository.BankRepository;
+import com.pavan.repository.ChitRepository;
+import com.pavan.repository.ExpenseRepository;
 import com.pavan.repository.FdRespository;
 import com.pavan.repository.JobRespository;
 import com.pavan.repository.UserRespository;
@@ -35,13 +35,13 @@ import com.pavan.util.Utility;
 public class DataDownloadServiceImpl implements DataDownloadService {
 
 	@Autowired
-	private BankRespository bankRepository;
+	private BankRepository bankRepository;
 
 	@Autowired
-	private ChitRespository chitRepository;
+	private ChitRepository chitRepository;
 
 	@Autowired
-	private ExpenseRespository expenseRepository;
+	private ExpenseRepository expenseRepository;
 
 	@Autowired
 	private FdRespository fdRepository;
@@ -109,7 +109,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		// Create Bank sheet
 		XSSFSheet sheet = workbook.createSheet("Bank");
 
-		String headers[] = new String[] { "ID", "NAME", "BALANCE", "CREATED_ON", "UPDATED_ON" };
+		String headers[] = new String[] { "ID", "USER_ID", "NAME", "BALANCE", "CREATED_ON", "UPDATED_ON" };
 
 		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
@@ -120,9 +120,10 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		List<Bank> banks = bankRepository.findAll();
 
 		for (Bank bank : banks) {
-			data.add(new Object[] { bank.getId(), bank.getName(), bank.getBalance(),
-					bank.getCreatedOn() != null ? bank.getCreatedOn().toString() : null,
-					bank.getUpdatedOn() != null ? bank.getUpdatedOn().toString() : null });
+			data.add(
+					new Object[] { bank.getId(), bank.getUser() != null ? bank.getUser().getId() : null, bank.getName(),
+							bank.getBalance(), bank.getCreatedOn() != null ? bank.getCreatedOn().toString() : null,
+							bank.getUpdatedOn() != null ? bank.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);
@@ -132,8 +133,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		// Create Bank sheet
 		XSSFSheet sheet = workbook.createSheet("Chit");
 
-		String headers[] = new String[] { "ID", "MONTH", "YEAR", "ACTUAL_AMOUNT", "PAID_AMOUNT", "PROFIT", "CREATED_ON",
-				"UPDATED_ON" };
+		String headers[] = new String[] { "ID", "USER_ID", "MONTH", "YEAR", "ACTUAL_AMOUNT", "PAID_AMOUNT", "PROFIT",
+				"CREATED_ON", "UPDATED_ON" };
 
 		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
@@ -144,8 +145,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		List<Chit> chits = chitRepository.findAll();
 
 		for (Chit chit : chits) {
-			data.add(new Object[] { chit.getId(), chit.getMonth(), chit.getYear(), chit.getActualAmount(),
-					chit.getPaidAmount(), chit.getProfit(),
+			data.add(new Object[] { chit.getId(), chit.getUser() != null ? chit.getUser().getId() : null,
+					chit.getMonth(), chit.getYear(), chit.getActualAmount(), chit.getPaidAmount(), chit.getProfit(),
 					chit.getCreatedOn() != null ? chit.getCreatedOn().toString() : null,
 					chit.getUpdatedOn() != null ? chit.getUpdatedOn().toString() : null });
 		}
@@ -157,7 +158,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		// Create Bank sheet
 		XSSFSheet sheet = workbook.createSheet("Expense");
 
-		String headers[] = new String[] { "ID", "NAME", "AMOUNT", "EXPENSE_DATE", "CREATED_ON", "UPDATED_ON" };
+		String headers[] = new String[] { "ID", "USER_ID", "EXPENSE_TYPE", "NAME", "AMOUNT", "EXPENSE_DATE",
+				"CREATED_ON", "UPDATED_ON" };
 
 		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
@@ -168,7 +170,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		List<Expense> expenses = expenseRepository.findAll();
 
 		for (Expense expense : expenses) {
-			data.add(new Object[] { expense.getId(), expense.getName(), expense.getAmount(), expense.getDate(),
+			data.add(new Object[] { expense.getId(), expense.getUser() != null ? expense.getUser().getId() : null,
+					expense.getExpenseType(), expense.getName(), expense.getAmount(), expense.getDate(),
 					expense.getCreatedOn() != null ? expense.getCreatedOn().toString() : null,
 					expense.getUpdatedOn() != null ? expense.getUpdatedOn().toString() : null });
 		}
@@ -180,7 +183,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		// Create Bank sheet
 		XSSFSheet sheet = workbook.createSheet("Fd");
 
-		String headers[] = new String[] { "ID", "BANK", "DEP_AMOUNT", "ROI", "MAT_AMOUNT", "DEPOSITED_ON",
+		String headers[] = new String[] { "ID", "USER_ID", "BANK", "DEP_AMOUNT", "ROI", "MAT_AMOUNT", "DEPOSITED_ON",
 				"PERIOD_IN_MONTHS", "MATURED_ON", "CREATED_ON", "UPDATED_ON" };
 
 		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
@@ -192,9 +195,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		List<Fd> fds = fdRepository.findAll();
 
 		for (Fd fd : fds) {
-			data.add(new Object[] { fd.getId(), fd.getBank(), fd.getDepAmount(), fd.getRoi(), fd.getMaturedAmount(),
-					fd.getDepositedOn(), fd.getPeriodInMonths(), fd.getMaturedOn(),
-					fd.getCreatedOn() != null ? fd.getCreatedOn().toString() : null,
+			data.add(new Object[] { fd.getId(), fd.getUser() != null ? fd.getUser().getId() : null, fd.getBank(),
+					fd.getDepAmount(), fd.getRoi(), fd.getMaturedAmount(), fd.getDepositedOn(), fd.getPeriodInMonths(),
+					fd.getMaturedOn(), fd.getCreatedOn() != null ? fd.getCreatedOn().toString() : null,
 					fd.getUpdatedOn() != null ? fd.getUpdatedOn().toString() : null });
 		}
 
@@ -205,8 +208,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		// Create Job sheet
 		XSSFSheet sheet = workbook.createSheet("Job");
 
-		String headers[] = new String[] { "ID", "COMPANY", "DESIGNATION", "DOJ", "DOL", "CURRENT_JOB", "CREATED_ON",
-				"UPDATED_ON" };
+		String headers[] = new String[] { "ID", "USER_ID", "COMPANY", "DESIGNATION", "DOJ", "DOL", "CURRENT_JOB",
+				"CREATED_ON", "UPDATED_ON" };
 
 		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
@@ -217,8 +220,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		List<Job> jobs = jobRepository.findAll();
 
 		for (Job job : jobs) {
-			data.add(new Object[] { job.getId(), job.getCompany(), job.getDesignation(), job.getDoj(), job.getDol(),
-					job.getCurrent(), job.getCreatedOn() != null ? job.getCreatedOn().toString() : null,
+			data.add(new Object[] { job.getId(), job.getUser() != null ? job.getUser().getId() : null, job.getCompany(),
+					job.getDesignation(), job.getDoj(), job.getDol(), job.getCurrent(),
+					job.getCreatedOn() != null ? job.getCreatedOn().toString() : null,
 					job.getUpdatedOn() != null ? job.getUpdatedOn().toString() : null });
 		}
 

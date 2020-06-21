@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -37,5 +39,9 @@ public class Job extends BaseEntity {
 	
 	@Column(name = "CURRENT_JOB")
 	private Boolean current;
+	
+	@ManyToOne
+	@JoinColumn(name = "USER_ID")
+	private User user;
 	
 }

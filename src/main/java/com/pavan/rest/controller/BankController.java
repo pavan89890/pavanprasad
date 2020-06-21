@@ -43,7 +43,7 @@ public class BankController {
 
 			User currentUser = loginService.getUserFromToken(userToken);
 			if (currentUser != null) {
-				bankService.saveBank(currentUser,bankBean);
+				bankService.saveBank(currentUser, bankBean);
 
 				if (Utility.isEmpty(bankBean.getId())) {
 					message = "Bank saved successfully";
@@ -74,39 +74,45 @@ public class BankController {
 	}
 
 	@GetMapping("/{id}")
-	public ApiResponse getBank(@RequestHeader("userToken") String userToken,@PathVariable(value = "id") Long id) {
+	public ApiResponse getBank(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
 		User currentUser = loginService.getUserFromToken(userToken);
 		if (currentUser != null) {
-			return bankService.getBank(currentUser,id);
+			return bankService.getBank(id);
 		} else {
 			return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
 		}
-	
+
 	}
 
 	@DeleteMapping("/{id}")
-	public ApiResponse deleteBank(@RequestHeader("userToken") String userToken,@PathVariable(value = "id") Long id) {
+	public ApiResponse deleteBank(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
 
 		User currentUser = loginService.getUserFromToken(userToken);
 		if (currentUser != null) {
-			return bankService.deleteBank(currentUser,id);
+			return bankService.deleteBank(id);
 		} else {
 			return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
 		}
-	
-	
+
 	}
 
 	@DeleteMapping
-	public ApiResponse deleteBanks(@RequestHeader("userToken") String userToken) {
-
+	public ApiResponse deleteUserBanks(@RequestHeader("userToken") String userToken) {
 		User currentUser = loginService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return bankService.deleteBanks(currentUser);
 		} else {
 			return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
 		}
-	
-	
+	}
+
+	@DeleteMapping(value = "/all")
+	public ApiResponse deleteBanks(@RequestHeader("userToken") String userToken) {
+		User currentUser = loginService.getUserFromToken(userToken);
+		if (currentUser != null) {
+			return bankService.deleteBanks(null);
+		} else {
+			return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
+		}
 	}
 }

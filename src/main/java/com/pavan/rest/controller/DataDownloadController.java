@@ -7,12 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pavan.beans.ApiResponse;
+import com.pavan.modal.User;
 import com.pavan.service.DataDownloadService;
+import com.pavan.service.LoginService;
 
 @RestController
 @RequestMapping(path = "/api/data/")
@@ -24,31 +26,49 @@ public class DataDownloadController {
 
 	private String message;
 
-	@ResponseStatus(HttpStatus.OK)
-	@GetMapping("download")
-	public HttpEntity<byte[]> downloadData() {
+	@Autowired
+	private LoginService loginService;
 
-		/** assume that below line gives you file content in byte array **/
-		byte[] excelContent = dataDownloadService.downloadData();
-		// prepare response
+	@GetMapping("download")
+	public HttpEntity<byte[]> downloadData(@RequestHeader("userToken") String userToken) {
+
+		User currentUser = loginService.getUserFromToken(userToken);
+
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=PavanPrasadData.xlsx");
-		header.setContentLength(excelContent != null ? excelContent.length : 0);
 
-		return new HttpEntity<byte[]>(excelContent, header);
+		byte[] excelContent = null;
+
+		if (currentUser != null) {
+			/** assume that below line gives you file content in byte array **/
+			excelContent = dataDownloadService.downloadData();
+			// prepare response
+
+			header.setContentLength(excelContent != null ? excelContent.length : 0);
+
+			return new HttpEntity<byte[]>(excelContent, header);
+		} else {
+			header.setContentLength(excelContent != null ? excelContent.length : 0);
+			return new HttpEntity<byte[]>(excelContent, header);
+		}
 	}
 
-	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("mail")
-	public ApiResponse mailData() {
+	public ApiResponse mailData(@RequestHeader("userToken") String userToken) {
 
 		try {
-			dataDownloadService.mailData();
+			User currentUser = loginService.getUserFromToken(userToken);
+			if (currentUser != null) {
+				dataDownloadService.mailData();
 
-			message = "Email sent successfully";
+				message = "Email sent successfully";
 
-			return new ApiResponse(HttpStatus.OK, message, null);
+				return new ApiResponse(HttpStatus.OK, message, null);
+			} else {
+				return new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized to acccess this resource", null);
+			}
+
 		} catch (Exception e) {
 			message = "Error-" + e.getMessage();
 			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, null);

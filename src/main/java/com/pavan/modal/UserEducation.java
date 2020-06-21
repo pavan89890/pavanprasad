@@ -25,7 +25,7 @@ public class UserEducation extends BaseEntity {
 	@Column(name = "ID")
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(targetEntity = User.class)
 	@JoinColumn(name = "USER_ID",referencedColumnName = "id")
 	private User user;
 

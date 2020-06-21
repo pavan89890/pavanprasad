@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.EventBean;
 import com.pavan.modal.Events;
+import com.pavan.modal.User;
 import com.pavan.repository.EventRepository;
 import com.pavan.service.EventService;
 import com.pavan.util.DateUtil;
@@ -29,11 +30,16 @@ public class EventServiceImpl implements EventService {
 	private String message = "";
 
 	@Override
-	public ApiResponse getEvents() {
+	public ApiResponse getEvents(User user, String eventType) {
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Events> events = eventRepository.getEventsOrderByDateAsc();
+		List<Events> events = null;
+		if (!Utility.isEmpty(eventType)) {
+			events = eventRepository.getUserEventsByTypeOrderByDateAsc(user,eventType);
+		} else {
+			events = eventRepository.getUserEventsOrderByDateAsc(user);
+		}
 		List<EventBean> eventBeans = new ArrayList<EventBean>();
 
 		for (Events event : events) {
@@ -79,7 +85,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public void saveEvent(EventBean eventBean) throws Exception {
+	public void saveEvent(EventBean eventBean, User user) throws Exception {
 
 		if (!validData(eventBean)) {
 			throw new Exception(message);
@@ -93,6 +99,7 @@ public class EventServiceImpl implements EventService {
 		event.setEventType(eventBean.getEventType());
 		event.setEventName(eventBean.getEventName());
 		event.setEventDesc(eventBean.getEventDesc());
+		event.setUser(user);
 
 		Date eventDate = null;
 
@@ -107,10 +114,10 @@ public class EventServiceImpl implements EventService {
 
 		event.setEventDate(eventDate);
 
-		Events c = eventRepository.findByEventName(event.getEventName());
+		Events c = eventRepository.findByUserAndEventName(user, event.getEventName());
 
 		if (c != null) {
-			if ((event.getId() == null) || (event.getId() != c.getId())) {
+			if ((event.getId() == null) || (event.getId().longValue() != c.getId().longValue())) {
 				message = "Event Name Already Exists";
 				throw new Exception(message);
 			}
@@ -126,17 +133,17 @@ public class EventServiceImpl implements EventService {
 			message = "Please Enter Event Type";
 			return false;
 		}
-		
+
 		if (Utility.isEmpty(bean.getEventName())) {
 			message = "Please Enter Event Name";
 			return false;
 		}
-		
+
 		if (Utility.isEmpty(bean.getEventDesc())) {
 			message = "Please Enter Event Description";
 			return false;
 		}
-		
+
 		if (Utility.isEmpty(bean.getEventDateStr())) {
 			message = "Please Enter Event Date";
 			return false;
@@ -174,9 +181,14 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public ApiResponse deleteEvents() {
-		eventRepository.deleteAll();
-		message = "Events deleted successfully";
+	public ApiResponse deleteEvents(User currentUser) {
+		if (currentUser != null) {
+			eventRepository.deleteByUser(currentUser);
+			message = "Hi " + currentUser.getName() + ",all your events deleted successfully";
+		} else {
+			eventRepository.deleteAll();
+			message = "Events deleted successfully";
+		}
 		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 

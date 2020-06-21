@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.FdBean;
 import com.pavan.modal.Fd;
+import com.pavan.modal.User;
 import com.pavan.repository.FdRespository;
 import com.pavan.service.FdService;
 import com.pavan.util.DateUtil;
@@ -32,7 +33,7 @@ public class FdServiceImpl implements FdService {
 	private String message = "";
 
 	@Override
-	public void saveFd(FdBean fdBean) throws Exception {
+	public void saveFd(FdBean fdBean, User currentUser) throws Exception {
 
 		Fd fd = new Fd();
 		if (fdBean.getId() != null) {
@@ -42,6 +43,7 @@ public class FdServiceImpl implements FdService {
 		fd.setFdrNo(fdBean.getFdrNo());
 		fd.setDepAmount(fdBean.getDepAmount());
 		fd.setRoi(fdBean.getRoi());
+		fd.setUser(currentUser);
 
 		Float maturedAmount = 0f;
 		if (fdBean.getDepAmount() != null) {
@@ -80,11 +82,16 @@ public class FdServiceImpl implements FdService {
 	}
 
 	@Override
-	public ApiResponse getFds() {
+	public ApiResponse getFds(User currentUser) {
 
 		Map<String, Object> data = new LinkedHashMap<>();
 
-		List<Fd> fds = fdRepository.findAllByOrderByMaturedOn();
+		List<Fd> fds = null;
+		if (currentUser != null) {
+			fds = fdRepository.findByUserOrderByMaturedOn(currentUser);
+		} else {
+			fds = fdRepository.findByUserOrderByMaturedOn(currentUser);
+		}
 
 		List<FdBean> fdBeans = new ArrayList<>();
 
@@ -119,19 +126,19 @@ public class FdServiceImpl implements FdService {
 				fdBean.setRemainingTime(DateUtil.getDateDifference(date1, date2));
 
 			}
-			
-			fdBean.setProfit(fdBean.getMaturedAmount()-fdBean.getDepAmount());
+
+			fdBean.setProfit(fdBean.getMaturedAmount() - fdBean.getDepAmount());
 
 			fdBeans.add(fdBean);
 		}
 
 		data.put("fds", fdBeans);
 
-		Float totalDeposited = fdRepository.getTotalDeposited();
+		Float totalDeposited = fdRepository.getTotalDeposited(currentUser);
 
-		Float totalMatured = fdRepository.getTotalMatured();
-		
-		Float totalProfit=totalMatured-totalDeposited;
+		Float totalMatured = fdRepository.getTotalMatured(currentUser);
+
+		Float totalProfit = totalMatured - totalDeposited;
 
 		data.put("fds", fdBeans);
 		data.put("totalDeposited", totalDeposited);
@@ -169,9 +176,14 @@ public class FdServiceImpl implements FdService {
 	}
 
 	@Override
-	public ApiResponse deleteFds() {
-		fdRepository.deleteAll();
-		message = "Fixed Deposits deleted successfully";
+	public ApiResponse deleteFds(User currentUser) {
+		if (currentUser != null) {
+			fdRepository.deleteByUser(currentUser);
+			message = "Hi "+currentUser.getName()+", Fixed Deposits deleted successfully";
+		} else {
+			fdRepository.deleteAll();
+			message = "Fixed Deposits deleted successfully";
+		}
 		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 

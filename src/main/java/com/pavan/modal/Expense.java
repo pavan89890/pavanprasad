@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -25,10 +27,17 @@ public class Expense extends BaseEntity {
 
 	@Column(name = "NAME")
 	private String name;
+	
+	@Column(name = "EXPENSE_TYPE")
+	private String expenseType;
 
 	@Column(name = "AMOUNT")
 	private Float amount;
 
 	@Column(name = "EXPENSE_DATE")
 	private Date date;
+	
+	@ManyToOne
+	@JoinColumn(name = "USER_ID")
+	private User user;
 }
