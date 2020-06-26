@@ -19,7 +19,7 @@ import com.pavan.beans.ApiResponse;
 import com.pavan.beans.EventBean;
 import com.pavan.modal.User;
 import com.pavan.service.EventService;
-import com.pavan.service.LoginService;
+import com.pavan.service.UserService;
 import com.pavan.util.Utility;
 
 @RestController
@@ -31,7 +31,7 @@ public class EventController {
 	private EventService eventService;
 
 	@Autowired
-	private LoginService loginService;
+	private UserService userService;
 
 	private String message;
 
@@ -41,7 +41,7 @@ public class EventController {
 			@RequestBody(required = true) EventBean eventBean) {
 
 		try {
-			User currentUser = loginService.getUserFromToken(userToken);
+			User currentUser = userService.getUserFromToken(userToken);
 			if (currentUser != null) {
 				eventService.saveEvent(eventBean, currentUser);
 
@@ -65,7 +65,7 @@ public class EventController {
 	@GetMapping
 	public ApiResponse getEvents(@RequestHeader("userToken") String userToken,
 			@RequestParam(value = "eventType", required = false) String eventType) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return eventService.getEvents(currentUser,eventType);
 		} else {
@@ -76,7 +76,7 @@ public class EventController {
 	@GetMapping("/{id}")
 	public ApiResponse getEvent(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
 
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return eventService.getEvent(id);
 		} else {
@@ -87,7 +87,7 @@ public class EventController {
 
 	@DeleteMapping("/{id}")
 	public ApiResponse deleteEvent(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return eventService.deleteEvent(id);
 		} else {
@@ -97,7 +97,7 @@ public class EventController {
 
 	@DeleteMapping
 	public ApiResponse deleteUserEvents(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return eventService.deleteEvents(currentUser);
 		} else {
@@ -107,7 +107,7 @@ public class EventController {
 
 	@DeleteMapping("/all")
 	public ApiResponse deleteEvents(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return eventService.deleteEvents(null);
 		} else {

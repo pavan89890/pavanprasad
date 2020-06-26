@@ -39,27 +39,7 @@ public class UserServiceImpl implements UserService {
 		List<UserBean> userBeans = new ArrayList<UserBean>();
 
 		for (User user : users) {
-			UserBean bean = new UserBean();
-			bean.setId(user.getId());
-			bean.setName(user.getName());
-			bean.setEmail(user.getEmail());
-			bean.setPassword(user.getPassword());
-			bean.setMobile(user.getMobile());
-
-			LocalDate currentDate = LocalDate.now();
-
-			if (user.getOriDob() != null) {
-				bean.setOriDobStr(DateUtil.yyyy_MM_dd.format(user.getOriDob()));
-				LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				bean.setOriAgeStr(DateUtil.getDateDifference(oriLocalDate, currentDate));
-			}
-
-			if (user.getCerDob() != null) {
-				bean.setCerDobStr(DateUtil.yyyy_MM_dd.format(user.getCerDob()));
-				LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				bean.setCerAgeStr(DateUtil.getDateDifference(cerLocalDate, currentDate));
-			}
-
+			UserBean bean = toUserBean(user);
 			userBeans.add(bean);
 		}
 
@@ -128,7 +108,7 @@ public class UserServiceImpl implements UserService {
 			message = "Please Enter Mobile";
 			return false;
 		}
-		
+
 		if (Utility.isEmpty(bean.getPassword())) {
 			message = "Please Enter Password";
 			return false;
@@ -147,25 +127,41 @@ public class UserServiceImpl implements UserService {
 			if (userOp.isPresent()) {
 				User user = userOp.get();
 
-				UserBean bean = new UserBean();
-				bean.setId(user.getId());
-				bean.setName(user.getName());
-				bean.setMobile(user.getMobile());
-				bean.setOriDobStr(DateUtil.yyyy_MM_dd.format(user.getOriDob()));
-				bean.setCerDobStr(DateUtil.yyyy_MM_dd.format(user.getCerDob()));
-
-				LocalDate currentDate = LocalDate.now();
-				LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-				bean.setOriAgeStr(DateUtil.getDateDifference(currentDate, oriLocalDate));
-				bean.setCerAgeStr(DateUtil.getDateDifference(currentDate, cerLocalDate));
+				UserBean bean = toUserBean(user);
 
 				return new ApiResponse(HttpStatus.OK, null, bean);
 			} else {
 				return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 			}
 		}
+	}
+
+	private UserBean toUserBean(User user) {
+		if (user != null) {
+			UserBean bean = new UserBean();
+			bean.setId(user.getId());
+			bean.setName(user.getName());
+			bean.setEmail(user.getEmail());
+			bean.setPassword(user.getPassword());
+			bean.setMobile(user.getMobile());
+
+			LocalDate currentDate = LocalDate.now();
+
+			if (user.getOriDob() != null) {
+				bean.setOriDobStr(DateUtil.yyyy_MM_dd.format(user.getOriDob()));
+				LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				bean.setOriAgeStr(DateUtil.getDateDifference(oriLocalDate, currentDate));
+			}
+
+			if (user.getCerDob() != null) {
+				bean.setCerDobStr(DateUtil.yyyy_MM_dd.format(user.getCerDob()));
+				LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				bean.setCerAgeStr(DateUtil.getDateDifference(cerLocalDate, currentDate));
+			}
+			bean.setUserToken(Utility.encrypt(user.getId() + ""));
+			return bean;
+		}
+		return null;
 	}
 
 	@Override
@@ -184,6 +180,37 @@ public class UserServiceImpl implements UserService {
 		usersRepository.deleteAll();
 		message = "Users deleted successfully";
 		return new ApiResponse(HttpStatus.OK, message, null);
+	}
+
+	@Override
+	public User getUserFromToken(String userToken) {
+		if (userToken != null && userToken.length() > 0) {
+			try {
+				Long userId = Long.parseLong(Utility.decrypt(userToken));
+				return usersRepository.findById(userId).orElse(null);
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public ApiResponse getUserResponseFromToken(String userToken) {
+		User user = getUserFromToken(userToken);
+		if (user != null) {
+			UserBean bean = toUserBean(user);
+			return new ApiResponse(HttpStatus.OK, null, bean);
+		} else {
+			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
+		}
+	}
+
+	@Override
+	public UserBean getUser(String email, String password) {
+		User user = usersRepository.findByEmailAndPassword(email, password);
+		UserBean userBean = toUserBean(user);
+		return userBean;
 	}
 
 }

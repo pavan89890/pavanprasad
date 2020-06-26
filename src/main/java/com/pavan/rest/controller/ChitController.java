@@ -18,7 +18,7 @@ import com.pavan.beans.ApiResponse;
 import com.pavan.beans.ChitBean;
 import com.pavan.modal.User;
 import com.pavan.service.ChitService;
-import com.pavan.service.LoginService;
+import com.pavan.service.UserService;
 import com.pavan.util.Utility;
 
 @RestController
@@ -30,7 +30,7 @@ public class ChitController {
 	private ChitService chitService;
 
 	@Autowired
-	private LoginService loginService;
+	private UserService userService;
 
 	private String message;
 
@@ -41,7 +41,7 @@ public class ChitController {
 
 		try {
 
-			User currentUser = loginService.getUserFromToken(userToken);
+			User currentUser = userService.getUserFromToken(userToken);
 			if (currentUser != null) {
 				chitService.saveChit(currentUser, chitBean);
 
@@ -65,7 +65,7 @@ public class ChitController {
 	@GetMapping
 	public ApiResponse chits(@RequestHeader("userToken") String userToken) {
 
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return chitService.getChits(currentUser);
 		} else {
@@ -76,7 +76,7 @@ public class ChitController {
 	@GetMapping("/{id}")
 	public ApiResponse getChit(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
 
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return chitService.getChit(id);
 		} else {
@@ -88,7 +88,7 @@ public class ChitController {
 	@DeleteMapping("/{id}")
 	public ApiResponse deleteChit(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
 
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return chitService.deleteChit(id);
 		} else {
@@ -100,7 +100,7 @@ public class ChitController {
 	@DeleteMapping
 	public ApiResponse deleteUserChits(@RequestHeader("userToken") String userToken) {
 
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return chitService.deleteChits(currentUser);
 		} else {
@@ -111,7 +111,7 @@ public class ChitController {
 
 	@DeleteMapping("/all")
 	public ApiResponse deleteChits(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return chitService.deleteChits(null);
 		} else {

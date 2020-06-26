@@ -18,7 +18,7 @@ import com.pavan.beans.ApiResponse;
 import com.pavan.beans.FdBean;
 import com.pavan.modal.User;
 import com.pavan.service.FdService;
-import com.pavan.service.LoginService;
+import com.pavan.service.UserService;
 import com.pavan.util.Utility;
 
 @RestController
@@ -27,7 +27,7 @@ import com.pavan.util.Utility;
 public class FdController {
 
 	@Autowired
-	private LoginService loginService;
+	private UserService userService;
 
 	@Autowired
 	private FdService fdService;
@@ -40,7 +40,7 @@ public class FdController {
 			@RequestBody(required = true) FdBean fdBean) {
 
 		try {
-			User currentUser = loginService.getUserFromToken(userToken);
+			User currentUser = userService.getUserFromToken(userToken);
 			if (currentUser != null) {
 				fdService.saveFd(fdBean, currentUser);
 
@@ -63,7 +63,7 @@ public class FdController {
 
 	@GetMapping
 	public ApiResponse fds(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return fdService.getFds(currentUser);
 		} else {
@@ -73,7 +73,7 @@ public class FdController {
 
 	@GetMapping("/{id}")
 	public ApiResponse getFd(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return fdService.getFd(id);
 		} else {
@@ -83,7 +83,7 @@ public class FdController {
 
 	@DeleteMapping("/{id}")
 	public ApiResponse deleteFd(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return fdService.deleteFd(id);
 		} else {
@@ -93,7 +93,7 @@ public class FdController {
 
 	@DeleteMapping
 	public ApiResponse deleteFds(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return fdService.deleteFds(currentUser);
 		} else {
@@ -103,7 +103,7 @@ public class FdController {
 	
 	@DeleteMapping("/all")
 	public ApiResponse deleteAllFds(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return fdService.deleteFds(null);
 		} else {

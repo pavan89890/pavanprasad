@@ -19,7 +19,7 @@ import com.pavan.beans.ApiResponse;
 import com.pavan.beans.ExpenseBean;
 import com.pavan.modal.User;
 import com.pavan.service.ExpenseService;
-import com.pavan.service.LoginService;
+import com.pavan.service.UserService;
 import com.pavan.util.Utility;
 
 @RestController
@@ -31,7 +31,7 @@ public class ExpenseController {
 	private ExpenseService expenseService;
 
 	@Autowired
-	private LoginService loginService;
+	private UserService userService;
 
 	private String message;
 
@@ -41,7 +41,7 @@ public class ExpenseController {
 			@RequestBody(required = true) ExpenseBean expenseBean) {
 
 		try {
-			User currentUser = loginService.getUserFromToken(userToken);
+			User currentUser = userService.getUserFromToken(userToken);
 			if (currentUser != null) {
 				expenseService.saveExpense(currentUser, expenseBean);
 
@@ -65,7 +65,7 @@ public class ExpenseController {
 	@GetMapping
 	public ApiResponse expenses(@RequestHeader("userToken") String userToken,
 			@RequestParam(value = "expenseType", required = false) String expenseType) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return expenseService.getExpenses(currentUser, expenseType);
 		} else {
@@ -75,7 +75,7 @@ public class ExpenseController {
 
 	@GetMapping("/{id}")
 	public ApiResponse getExpense(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return expenseService.getExpense(id);
 		} else {
@@ -86,7 +86,7 @@ public class ExpenseController {
 	@DeleteMapping("/{id}")
 	public ApiResponse deleteExpense(@RequestHeader("userToken") String userToken,
 			@PathVariable(value = "id") Long id) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return expenseService.deleteExpense(id);
 		} else {
@@ -96,7 +96,7 @@ public class ExpenseController {
 
 	@DeleteMapping()
 	public ApiResponse deleteExpenses(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return expenseService.deleteExpenses(currentUser);
 		} else {
@@ -106,7 +106,7 @@ public class ExpenseController {
 
 	@DeleteMapping("/all")
 	public ApiResponse deleteAllExpenses(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return expenseService.deleteExpenses(null);
 		} else {

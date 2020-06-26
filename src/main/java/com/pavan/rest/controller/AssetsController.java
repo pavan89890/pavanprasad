@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pavan.beans.ApiResponse;
 import com.pavan.modal.User;
 import com.pavan.service.AssetService;
-import com.pavan.service.LoginService;
+import com.pavan.service.UserService;
 
 @RestController
 @RequestMapping(path = "/api/assets")
@@ -22,11 +22,11 @@ public class AssetsController {
 	private AssetService assetService;
 
 	@Autowired
-	private LoginService loginService;
+	private UserService userService;
 
 	@GetMapping
 	public ApiResponse assets(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return assetService.getAssets(currentUser);
 		} else {

@@ -18,7 +18,7 @@ import com.pavan.beans.ApiResponse;
 import com.pavan.beans.JobBean;
 import com.pavan.modal.User;
 import com.pavan.service.JobService;
-import com.pavan.service.LoginService;
+import com.pavan.service.UserService;
 import com.pavan.util.Utility;
 
 @RestController
@@ -30,7 +30,7 @@ public class JobController {
 	private JobService jobService;
 	
 	@Autowired
-	private LoginService loginService;
+	private UserService userService;
 	
 	private String message;
 
@@ -40,7 +40,7 @@ public class JobController {
 			@RequestBody(required = true) JobBean jobBean) {
 
 		try {
-			User currentUser = loginService.getUserFromToken(userToken);
+			User currentUser = userService.getUserFromToken(userToken);
 			if (currentUser != null) {
 				jobService.saveJob(currentUser,jobBean);
 
@@ -63,7 +63,7 @@ public class JobController {
 
 	@GetMapping
 	public ApiResponse jobs(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return jobService.getJobs(currentUser);
 		} else {
@@ -73,7 +73,7 @@ public class JobController {
 
 	@GetMapping("/{id}")
 	public ApiResponse getJob(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return jobService.getJob(id);
 		} else {
@@ -83,7 +83,7 @@ public class JobController {
 
 	@DeleteMapping("/{id}")
 	public ApiResponse deleteJob(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return jobService.deleteJob(id);
 		} else {
@@ -93,7 +93,7 @@ public class JobController {
 
 	@DeleteMapping()
 	public ApiResponse deleteJobs(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return jobService.deleteJobs(currentUser);
 		} else {
@@ -103,7 +103,7 @@ public class JobController {
 	
 	@DeleteMapping("/all")
 	public ApiResponse deleteAllJobs(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return jobService.deleteJobs(null);
 		} else {

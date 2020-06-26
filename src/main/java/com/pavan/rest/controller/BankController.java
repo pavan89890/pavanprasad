@@ -18,7 +18,7 @@ import com.pavan.beans.ApiResponse;
 import com.pavan.beans.BankBean;
 import com.pavan.modal.User;
 import com.pavan.service.BankService;
-import com.pavan.service.LoginService;
+import com.pavan.service.UserService;
 import com.pavan.util.Utility;
 
 @RestController
@@ -27,7 +27,7 @@ import com.pavan.util.Utility;
 public class BankController {
 
 	@Autowired
-	private LoginService loginService;
+	private UserService userService;
 
 	@Autowired
 	private BankService bankService;
@@ -41,7 +41,7 @@ public class BankController {
 
 		try {
 
-			User currentUser = loginService.getUserFromToken(userToken);
+			User currentUser = userService.getUserFromToken(userToken);
 			if (currentUser != null) {
 				bankService.saveBank(currentUser, bankBean);
 
@@ -65,7 +65,7 @@ public class BankController {
 
 	@GetMapping
 	public ApiResponse banks(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return bankService.getBanks(currentUser);
 		} else {
@@ -75,7 +75,7 @@ public class BankController {
 
 	@GetMapping("/{id}")
 	public ApiResponse getBank(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return bankService.getBank(id);
 		} else {
@@ -87,7 +87,7 @@ public class BankController {
 	@DeleteMapping("/{id}")
 	public ApiResponse deleteBank(@RequestHeader("userToken") String userToken, @PathVariable(value = "id") Long id) {
 
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return bankService.deleteBank(id);
 		} else {
@@ -98,7 +98,7 @@ public class BankController {
 
 	@DeleteMapping
 	public ApiResponse deleteUserBanks(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return bankService.deleteBanks(currentUser);
 		} else {
@@ -108,7 +108,7 @@ public class BankController {
 
 	@DeleteMapping(value = "/all")
 	public ApiResponse deleteBanks(@RequestHeader("userToken") String userToken) {
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 		if (currentUser != null) {
 			return bankService.deleteBanks(null);
 		} else {

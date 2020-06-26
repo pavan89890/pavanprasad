@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pavan.beans.ApiResponse;
 import com.pavan.modal.User;
 import com.pavan.service.DataDownloadService;
-import com.pavan.service.LoginService;
+import com.pavan.service.UserService;
 
 @RestController
 @RequestMapping(path = "/api/data/")
@@ -27,12 +27,12 @@ public class DataDownloadController {
 	private String message;
 
 	@Autowired
-	private LoginService loginService;
+	private UserService userService;
 
 	@GetMapping("download")
 	public HttpEntity<byte[]> downloadData(@RequestHeader("userToken") String userToken) {
 
-		User currentUser = loginService.getUserFromToken(userToken);
+		User currentUser = userService.getUserFromToken(userToken);
 
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
@@ -58,7 +58,7 @@ public class DataDownloadController {
 	public ApiResponse mailData(@RequestHeader("userToken") String userToken) {
 
 		try {
-			User currentUser = loginService.getUserFromToken(userToken);
+			User currentUser = userService.getUserFromToken(userToken);
 			if (currentUser != null) {
 				dataDownloadService.mailData();
 

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
 import com.pavan.beans.UserBean;
+import com.pavan.modal.User;
 
 @Service
 public interface UserService {
@@ -17,5 +18,11 @@ public interface UserService {
 	public ApiResponse deleteUser(Long id);
 
 	public ApiResponse deleteUsers();
+
+	public User getUserFromToken(String userToken);
+
+	public UserBean getUser(String email, String password);
+
+	public ApiResponse getUserResponseFromToken(String userToken);
 
 }

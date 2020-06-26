@@ -25,6 +25,7 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
 	private String message;
 
 	@PostMapping
@@ -56,6 +57,11 @@ public class UserController {
 	@GetMapping("/{id}")
 	public ApiResponse getUser(@PathVariable(value = "id") Long id) {
 		return userService.getUser(id);
+	}
+
+	@GetMapping("/userToken/{userToken}")
+	public ApiResponse getUserFromToken(@PathVariable(value = "userToken") String userToken) {
+		return userService.getUserResponseFromToken(userToken);
 	}
 
 	@DeleteMapping("/{id}")
