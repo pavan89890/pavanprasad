@@ -152,7 +152,7 @@ public class ChitServiceImpl implements ChitService {
 		if (getChit(id).getData() == null) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
-			chitRepository.delete((Chit) getChit(id).getData());
+			chitRepository.deleteById(id);
 			message = "Chit deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}

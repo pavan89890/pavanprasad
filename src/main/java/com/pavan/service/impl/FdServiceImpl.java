@@ -173,7 +173,7 @@ public class FdServiceImpl implements FdService {
 		if (getFd(id).getData() == null) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
-			fdRepository.delete((Fd) getFd(id).getData());
+			fdRepository.deleteById(id);
 			message = "Fixed Deposit deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}

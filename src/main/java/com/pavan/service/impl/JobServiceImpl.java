@@ -165,7 +165,7 @@ public class JobServiceImpl implements JobService {
 		if (getJob(id).getData() == null) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
-			jobsRepository.delete((Job) getJob(id).getData());
+			jobsRepository.deleteById(id);
 			message = "Job deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}

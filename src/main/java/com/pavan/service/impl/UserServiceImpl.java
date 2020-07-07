@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
 		if (getUser(id).getData() == null) {
 			return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "No data found", null);
 		} else {
-			usersRepository.delete((User) getUser(id).getData());
+			usersRepository.deleteById(id);
 			message = "User deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}

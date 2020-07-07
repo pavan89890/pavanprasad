@@ -126,7 +126,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		if (getExpense(id).getData() == null) {
 			return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);
 		} else {
-			expenseRepository.delete((Expense) getExpense(id).getData());
+			expenseRepository.deleteById(id);
 			message = "Expense deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}

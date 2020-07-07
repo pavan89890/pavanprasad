@@ -20,7 +20,7 @@ public interface MfRespository extends JpaRepository<MutualFund, Long> {
 	@Query(value = "select sum(currentAmount) from MutualFund where user=:user")
 	public Float getTotalCurrent(@Param("user") User user);
 
-	public List<MutualFund> findByUserOrderByDepositedOn(User user);
+	public List<MutualFund> findByUserOrderByName(User user);
 
 	@Modifying
 	@Query("delete from MutualFund f where f.user=:user")

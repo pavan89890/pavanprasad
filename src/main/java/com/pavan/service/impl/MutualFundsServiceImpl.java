@@ -100,7 +100,7 @@ public class MutualFundsServiceImpl implements MutualFundService {
 
 		List<MutualFund> mfs = null;
 		if (currentUser != null) {
-			mfs = mfRepository.findByUserOrderByDepositedOn(currentUser);
+			mfs = mfRepository.findByUserOrderByName(currentUser);
 		}
 
 		List<MutualFundBean> mfBeans = new ArrayList<>();
@@ -118,12 +118,17 @@ public class MutualFundsServiceImpl implements MutualFundService {
 
 		Float totalCurrent = mfRepository.getTotalCurrent(currentUser);
 
-		Float totalProfitOrLoss = totalCurrent - totalInvested;
+		Float totalProfitprofitOrLossAmount = totalCurrent - totalInvested;
+		
+		Float totalProfitprofitOrLossPerc = (totalProfitprofitOrLossAmount/totalInvested)*100;
 
 		data.put("mfs", mfBeans);
+		
 		data.put("totalInvested", totalInvested);
 		data.put("totalCurrent", totalCurrent);
-		data.put("totalProfitOrLoss", totalProfitOrLoss);
+		
+		data.put("totalProfitprofitOrLossAmount", totalProfitprofitOrLossAmount);
+		data.put("totalProfitprofitOrLossPerc", totalProfitprofitOrLossPerc);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
@@ -167,7 +172,7 @@ public class MutualFundsServiceImpl implements MutualFundService {
 		if (getMutualFund(id).getData() == null) {
 			return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 		} else {
-			mfRepository.delete((MutualFund) getMutualFund(id).getData());
+			mfRepository.deleteById(id);
 			message = "Mutual Fund deleted successfully";
 			return new ApiResponse(HttpStatus.OK, message, null);
 		}
