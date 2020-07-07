@@ -42,14 +42,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 		Float totalExpense=0f;
 		for (Expense expense : expenses) {
-			ExpenseBean expenseBean = new ExpenseBean();
-			expenseBean.setId(expense.getId());
-			expenseBean.setName(expense.getName());
-			expenseBean.setAmount(expense.getAmount());
-			if (expense.getDate() != null) {
-				expenseBean.setExpenseDateStr(DateUtil.yyyy_MM_dd.format(expense.getDate()));
-			}
-			expenseBean.setExpenseType(expense.getExpenseType());
+			ExpenseBean expenseBean = toBean(expense);
 			totalExpense+=expenseBean.getAmount()!=null?expense.getAmount():0f;
 			expenseBeans.add(expenseBean);
 		}
@@ -62,6 +55,18 @@ public class ExpenseServiceImpl implements ExpenseService {
 		data.put("totalExpenses", totalExpense);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
+	}
+
+	private ExpenseBean toBean(Expense expense) {
+		ExpenseBean expenseBean = new ExpenseBean();
+		expenseBean.setId(expense.getId());
+		expenseBean.setName(expense.getName());
+		expenseBean.setAmount(expense.getAmount());
+		if (expense.getDate() != null) {
+			expenseBean.setExpenseDateStr(DateUtil.yyyy_MM_dd.format(expense.getDate()));
+		}
+		expenseBean.setExpenseType(expense.getExpenseType());
+		return expenseBean;
 	}
 
 	@Override
@@ -108,7 +113,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 			Optional<Expense> expenseOp = expenseRepository.findById(id);
 			if (expenseOp.isPresent()) {
-				Expense expense = expenseOp.get();
+				ExpenseBean expense = toBean(expenseOp.get());
 				return new ApiResponse(HttpStatus.OK, null, expense);
 			} else {
 				return new ApiResponse(HttpStatus.NOT_FOUND, "No data found", null);

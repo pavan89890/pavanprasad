@@ -42,14 +42,7 @@ public class ChitServiceImpl implements ChitService {
 		} else {
 
 			for (Chit chit : chits) {
-				ChitBean bean = new ChitBean();
-				bean.setId(chit.getId());
-				bean.setMonth(chit.getMonth());
-				bean.setMonthStr(DateUtil.getMonthName(chit.getMonth()));
-				bean.setYear(chit.getYear());
-				bean.setActualAmount(chit.getActualAmount());
-				bean.setPaidAmount(chit.getPaidAmount());
-				bean.setProfit(chit.getProfit());
+				ChitBean bean = toBean(chit);
 				totalDeposited += bean.getActualAmount();
 				totalProfit += bean.getProfit();
 				chitBeans.add(bean);
@@ -63,6 +56,18 @@ public class ChitServiceImpl implements ChitService {
 		data.put("totalProfit", totalProfit);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
+	}
+
+	private ChitBean toBean(Chit chit) {
+		ChitBean bean = new ChitBean();
+		bean.setId(chit.getId());
+		bean.setMonth(chit.getMonth());
+		bean.setMonthStr(DateUtil.getMonthName(chit.getMonth()));
+		bean.setYear(chit.getYear());
+		bean.setActualAmount(chit.getActualAmount());
+		bean.setPaidAmount(chit.getPaidAmount());
+		bean.setProfit(chit.getProfit());
+		return bean;
 	}
 
 	@Override
@@ -134,7 +139,7 @@ public class ChitServiceImpl implements ChitService {
 
 			Optional<Chit> chitOp = chitRepository.findById(id);
 			if (chitOp.isPresent()) {
-				Chit chit = chitOp.get();
+				ChitBean chit = toBean(chitOp.get());
 				return new ApiResponse(HttpStatus.OK, null, chit);
 			} else {
 				return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);

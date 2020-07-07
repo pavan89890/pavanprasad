@@ -100,35 +100,7 @@ public class FdServiceImpl implements FdService {
 		}
 
 		for (Fd fd : fds) {
-			FdBean fdBean = new FdBean();
-
-			fdBean.setId(fd.getId());
-			fdBean.setBank(fd.getBank());
-			fdBean.setFdrNo(fd.getFdrNo());
-			fdBean.setDepAmount(fd.getDepAmount());
-			fdBean.setRoi(fd.getRoi());
-
-			fdBean.setMaturedAmount(fd.getMaturedAmount());
-
-			if (fd.getDepositedOn() != null) {
-				fdBean.setDepositedOnStr(DateUtil.yyyy_MM_dd.format(fd.getDepositedOn()));
-			}
-
-			fdBean.setPeriodInMonths(fd.getPeriodInMonths());
-
-			if (fd.getMaturedOn() != null) {
-				fdBean.setMaturedOnStr(DateUtil.yyyy_MM_dd.format(fd.getMaturedOn()));
-
-				LocalDate date1 = LocalDate.now();
-
-				LocalDate date2 = fd.getMaturedOn().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-				fdBean.setRemainingTime(DateUtil.getDateDifference(date1, date2));
-
-			}
-
-			fdBean.setProfit(fdBean.getMaturedAmount() - fdBean.getDepAmount());
-
+			FdBean fdBean = toBean(fd);
 			fdBeans.add(fdBean);
 		}
 
@@ -146,6 +118,38 @@ public class FdServiceImpl implements FdService {
 		data.put("totalProfit", totalProfit);
 
 		return new ApiResponse(HttpStatus.OK, null, data);
+	}
+
+	private FdBean toBean(Fd fd) {
+		FdBean fdBean = new FdBean();
+
+		fdBean.setId(fd.getId());
+		fdBean.setBank(fd.getBank());
+		fdBean.setFdrNo(fd.getFdrNo());
+		fdBean.setDepAmount(fd.getDepAmount());
+		fdBean.setRoi(fd.getRoi());
+
+		fdBean.setMaturedAmount(fd.getMaturedAmount());
+
+		if (fd.getDepositedOn() != null) {
+			fdBean.setDepositedOnStr(DateUtil.yyyy_MM_dd.format(fd.getDepositedOn()));
+		}
+
+		fdBean.setPeriodInMonths(fd.getPeriodInMonths());
+
+		if (fd.getMaturedOn() != null) {
+			fdBean.setMaturedOnStr(DateUtil.yyyy_MM_dd.format(fd.getMaturedOn()));
+
+			LocalDate date1 = LocalDate.now();
+
+			LocalDate date2 = fd.getMaturedOn().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			fdBean.setRemainingTime(DateUtil.getDateDifference(date1, date2));
+
+		}
+
+		fdBean.setProfit(fdBean.getMaturedAmount() - fdBean.getDepAmount());
+		return fdBean;
 	}
 
 	@Override

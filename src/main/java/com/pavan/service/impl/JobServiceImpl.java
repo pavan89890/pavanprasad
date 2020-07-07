@@ -30,7 +30,7 @@ public class JobServiceImpl implements JobService {
 	private String message = "";
 
 	@Override
-	public void saveJob(User currentUser,JobBean jobBean) throws Exception {
+	public void saveJob(User currentUser, JobBean jobBean) throws Exception {
 
 		if (!validData(jobBean)) {
 			throw new Exception(message);
@@ -43,7 +43,7 @@ public class JobServiceImpl implements JobService {
 		job.setUser(currentUser);
 		job.setCompany(jobBean.getCompany());
 		job.setDesignation(jobBean.getDesignation());
-		job.setCurrent(jobBean.getCurrent()==null?false:jobBean.getCurrent());
+		job.setCurrent(jobBean.getCurrent() == null ? false : jobBean.getCurrent());
 		try {
 			if (!Utility.isEmpty(jobBean.getDojStr())) {
 
@@ -70,7 +70,7 @@ public class JobServiceImpl implements JobService {
 			message = "Please Enter Company Name";
 			return false;
 		}
-		
+
 		if (Utility.isEmpty(bean.getDesignation())) {
 			message = "Please Enter Designation";
 			return false;
@@ -97,32 +97,8 @@ public class JobServiceImpl implements JobService {
 
 		List<JobBean> jobBeans = new ArrayList<>();
 
-		LocalDate now = LocalDate.now();
-
 		for (Job job : jobs) {
-			JobBean jobBean = new JobBean();
-
-			jobBean.setId(job.getId());
-			jobBean.setCompany(job.getCompany());
-			jobBean.setDesignation(job.getDesignation());
-			jobBean.setCurrent(job.getCurrent()==null?false:job.getCurrent());
-
-			if (job.getDoj() != null) {
-				jobBean.setDojStr(DateUtil.yyyy_MM_dd.format(job.getDoj()));
-			}
-
-			if (job.getDol() != null) {
-				jobBean.setDolStr(DateUtil.yyyy_MM_dd.format(job.getDol()));
-			}
-
-			LocalDate date1 = job.getDoj().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-			if (job.getDol() != null) {
-				now = job.getDol().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			}
-
-			jobBean.setExperience(DateUtil.getDateDifference(date1, now));
-
+			JobBean jobBean = toBean(job);
 			jobBeans.add(jobBean);
 		}
 
@@ -140,6 +116,34 @@ public class JobServiceImpl implements JobService {
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
 
+	private JobBean toBean(Job job) {
+		LocalDate now = LocalDate.now();
+
+		JobBean jobBean = new JobBean();
+
+		jobBean.setId(job.getId());
+		jobBean.setCompany(job.getCompany());
+		jobBean.setDesignation(job.getDesignation());
+		jobBean.setCurrent(job.getCurrent() == null ? false : job.getCurrent());
+
+		if (job.getDoj() != null) {
+			jobBean.setDojStr(DateUtil.yyyy_MM_dd.format(job.getDoj()));
+		}
+
+		if (job.getDol() != null) {
+			jobBean.setDolStr(DateUtil.yyyy_MM_dd.format(job.getDol()));
+		}
+
+		LocalDate date1 = job.getDoj().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		if (job.getDol() != null) {
+			now = job.getDol().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		}
+
+		jobBean.setExperience(DateUtil.getDateDifference(date1, now));
+		return jobBean;
+	}
+
 	@Override
 	public ApiResponse getJob(Long id) {
 		if (id == null || id == 0) {
@@ -148,8 +152,8 @@ public class JobServiceImpl implements JobService {
 
 			Optional<Job> jobOp = jobsRepository.findById(id);
 			if (jobOp.isPresent()) {
-				Job fd = jobOp.get();
-				return new ApiResponse(HttpStatus.OK, null, fd);
+				JobBean jobBean = toBean(jobOp.get());
+				return new ApiResponse(HttpStatus.OK, null, jobBean);
 			} else {
 				return new ApiResponse(HttpStatus.NO_CONTENT, "No data found", null);
 			}
@@ -171,7 +175,7 @@ public class JobServiceImpl implements JobService {
 	public ApiResponse deleteJobs(User currentUser) {
 		if (currentUser != null) {
 			jobsRepository.deleteByUser(currentUser);
-			message = "Hi "+currentUser.getName()+", Jobs deleted successfully";
+			message = "Hi " + currentUser.getName() + ", Jobs deleted successfully";
 		} else {
 			jobsRepository.deleteAll();
 			message = "Jobs deleted successfully";
