@@ -47,4 +47,13 @@ public class DateUtil {
 		}
 	}
 
+	public static String dateToStr(Date date) {
+		String dateStr = null;
+		if (date == null) {
+			return null;
+		}
+		dateStr = yyyy_MM_dd.format(date);
+		return dateStr;
+	}
+
 }
