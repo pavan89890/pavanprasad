@@ -177,7 +177,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (Expense expense : expenses) {
 			data.add(new Object[] { expense.getId(), expense.getUser() != null ? expense.getUser().getId() : null,
-					expense.getExpenseType(), expense.getName(), expense.getAmount(), expense.getDate(),
+					expense.getExpenseType(), expense.getName(), expense.getAmount(),
+					DateUtil.dateToStr(expense.getDate()),
 					expense.getCreatedOn() != null ? expense.getCreatedOn().toString() : null,
 					expense.getUpdatedOn() != null ? expense.getUpdatedOn().toString() : null });
 		}
@@ -202,8 +203,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (Fd fd : fds) {
 			data.add(new Object[] { fd.getId(), fd.getUser() != null ? fd.getUser().getId() : null, fd.getBank(),
-					fd.getDepAmount(), fd.getRoi(), fd.getMaturedAmount(), fd.getDepositedOn(), fd.getPeriodInMonths(),
-					fd.getMaturedOn(), fd.getCreatedOn() != null ? fd.getCreatedOn().toString() : null,
+					fd.getDepAmount(), fd.getRoi(), fd.getMaturedAmount(), DateUtil.dateToStr(fd.getDepositedOn()),
+					fd.getPeriodInMonths(), DateUtil.dateToStr(fd.getMaturedOn()),
+					fd.getCreatedOn() != null ? fd.getCreatedOn().toString() : null,
 					fd.getUpdatedOn() != null ? fd.getUpdatedOn().toString() : null });
 		}
 
@@ -227,8 +229,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (Job job : jobs) {
 			data.add(new Object[] { job.getId(), job.getUser() != null ? job.getUser().getId() : null, job.getCompany(),
-					job.getDesignation(), job.getDoj(), job.getDol(), job.getCurrent(),
-					job.getCreatedOn() != null ? job.getCreatedOn().toString() : null,
+					job.getDesignation(), DateUtil.dateToStr(job.getDoj()), DateUtil.dateToStr(job.getDol()),
+					job.getCurrent(), job.getCreatedOn() != null ? job.getCreatedOn().toString() : null,
 					job.getUpdatedOn() != null ? job.getUpdatedOn().toString() : null });
 		}
 
@@ -250,7 +252,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		List<User> users = userRepository.findAll();
 
 		for (User user : users) {
-			data.add(new Object[] { user.getId(), user.getName(), user.getMobile(), user.getOriDob(), user.getCerDob(),
+			data.add(new Object[] { user.getId(), user.getName(), user.getMobile(),
+					DateUtil.dateToStr(user.getOriDob()), DateUtil.dateToStr(user.getCerDob()),
 					user.getCreatedOn() != null ? user.getCreatedOn().toString() : null,
 					user.getUpdatedOn() != null ? user.getUpdatedOn().toString() : null });
 		}
@@ -275,7 +278,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (MutualFund mf : mfs) {
 			data.add(new Object[] { mf.getId(), mf.getUser() != null ? mf.getUser().getId() : null, mf.getName(),
-					mf.getDesc(), mf.getInvestedAmount(), mf.getCurrentAmount(), mf.getDepositedOn(),
+					mf.getDesc(), mf.getInvestedAmount(), mf.getCurrentAmount(),
+					DateUtil.dateToStr(mf.getDepositedOn()),
 					mf.getCreatedOn() != null ? mf.getCreatedOn().toString() : null,
 					mf.getUpdatedOn() != null ? mf.getUpdatedOn().toString() : null });
 		}
