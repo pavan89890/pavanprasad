@@ -18,12 +18,14 @@ import com.pavan.modal.Chit;
 import com.pavan.modal.Expense;
 import com.pavan.modal.Fd;
 import com.pavan.modal.Job;
+import com.pavan.modal.MutualFund;
 import com.pavan.modal.User;
 import com.pavan.repository.BankRepository;
 import com.pavan.repository.ChitRepository;
 import com.pavan.repository.ExpenseRepository;
 import com.pavan.repository.FdRespository;
 import com.pavan.repository.JobRespository;
+import com.pavan.repository.MfRespository;
 import com.pavan.repository.UserRespository;
 import com.pavan.service.DataDownloadService;
 import com.pavan.util.DateUtil;
@@ -51,6 +53,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 	@Autowired
 	private UserRespository userRepository;
+
+	@Autowired
+	private MfRespository mfRepository;
 
 	@Override
 	public byte[] downloadData() {
@@ -99,6 +104,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		generateExpenseSheet(workbook);
 		generateJobSheet(workbook);
 		generateUserSheet(workbook);
+		generateMfSheet(workbook);
 
 		workbook.write(bos);
 
@@ -247,6 +253,31 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 			data.add(new Object[] { user.getId(), user.getName(), user.getMobile(), user.getOriDob(), user.getCerDob(),
 					user.getCreatedOn() != null ? user.getCreatedOn().toString() : null,
 					user.getUpdatedOn() != null ? user.getUpdatedOn().toString() : null });
+		}
+
+		ExcelUtil.createExcelRows(sheet, data);
+	}
+
+	private void generateMfSheet(XSSFWorkbook workbook) {
+		// Create Bank sheet
+		XSSFSheet sheet = workbook.createSheet("Mutual Fund");
+
+		String headers[] = new String[] { "ID", "USER_ID", "NAME", "DESCRIPTION", "INVESTED_AMOUNT", "CURRENT_AMOUNT",
+				"DEPOSITED_ON", "CREATED_ON", "UPDATED_ON" };
+
+		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
+
+		ExcelUtil.createExcelHeader(sheet, headers, headerStyle);
+
+		List<Object[]> data = new ArrayList<Object[]>();
+
+		List<MutualFund> mfs = mfRepository.findAll();
+
+		for (MutualFund mf : mfs) {
+			data.add(new Object[] { mf.getId(), mf.getUser() != null ? mf.getUser().getId() : null, mf.getName(),
+					mf.getDesc(), mf.getInvestedAmount(), mf.getCurrentAmount(), mf.getDepositedOn(),
+					mf.getCreatedOn() != null ? mf.getCreatedOn().toString() : null,
+					mf.getUpdatedOn() != null ? mf.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);
