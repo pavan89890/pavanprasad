@@ -63,7 +63,6 @@ public class EventServiceImpl implements EventService {
 			bean.setId(event.getId());
 			bean.setEventType(event.getEventType());
 			bean.setEventName(event.getEventName());
-			bean.setEventDesc(event.getEventDesc());
 
 			String eventDateStr = null;
 
@@ -98,7 +97,6 @@ public class EventServiceImpl implements EventService {
 
 		event.setEventType(eventBean.getEventType());
 		event.setEventName(eventBean.getEventName());
-		event.setEventDesc(eventBean.getEventDesc());
 		event.setUser(user);
 
 		Date eventDate = null;
@@ -136,11 +134,6 @@ public class EventServiceImpl implements EventService {
 
 		if (Utility.isEmpty(bean.getEventName())) {
 			message = "Please Enter Event Name";
-			return false;
-		}
-
-		if (Utility.isEmpty(bean.getEventDesc())) {
-			message = "Please Enter Event Description";
 			return false;
 		}
 

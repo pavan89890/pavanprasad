@@ -13,8 +13,6 @@ public class EventBean {
 
 	private String eventName;
 	
-	private String eventDesc;
-	
 	private String eventDateStr;
 
 	private boolean isToday;

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.pavan.modal.Bank;
 import com.pavan.modal.Chit;
+import com.pavan.modal.Events;
 import com.pavan.modal.Expense;
 import com.pavan.modal.Fd;
 import com.pavan.modal.Job;
@@ -22,6 +23,7 @@ import com.pavan.modal.MutualFund;
 import com.pavan.modal.User;
 import com.pavan.repository.BankRepository;
 import com.pavan.repository.ChitRepository;
+import com.pavan.repository.EventRepository;
 import com.pavan.repository.ExpenseRepository;
 import com.pavan.repository.FdRespository;
 import com.pavan.repository.JobRespository;
@@ -56,6 +58,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 	@Autowired
 	private MfRespository mfRepository;
+
+	@Autowired
+	private EventRepository eventRepository;
 
 	@Override
 	public byte[] downloadData() {
@@ -98,17 +103,43 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
-		generateBankSheet(workbook);
-		generateFdSheet(workbook);
-		generateChitSheet(workbook);
 		generateExpenseSheet(workbook);
-		generateJobSheet(workbook);
-		generateUserSheet(workbook);
+		generateBankSheet(workbook);
+		generateChitSheet(workbook);
+		generateFdSheet(workbook);
 		generateMfSheet(workbook);
+		generateJobSheet(workbook);
+		generateEventSheet(workbook);
+		generateUserSheet(workbook);
 
 		workbook.write(bos);
 
 		return bos;
+	}
+
+	private void generateEventSheet(XSSFWorkbook workbook) {
+		// Create Bank sheet
+		XSSFSheet sheet = workbook.createSheet("Event");
+
+		String headers[] = new String[] { "ID", "USER_ID", "EVENT_TYPE", "EVENT_NAME", "EVENT_DATE", "CREATED_ON",
+				"UPDATED_ON" };
+
+		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
+
+		ExcelUtil.createExcelHeader(sheet, headers, headerStyle);
+
+		List<Object[]> data = new ArrayList<Object[]>();
+
+		List<Events> events = eventRepository.findAll();
+
+		for (Events event : events) {
+			data.add(
+					new Object[] { event.getId(), event.getUser() != null ? event.getUser().getId() : null, event.getEventType(),
+							event.getEventName(),DateUtil.dateToStr(event.getEventDate()), event.getCreatedOn() != null ? event.getCreatedOn().toString() : null,
+							event.getUpdatedOn() != null ? event.getUpdatedOn().toString() : null });
+		}
+
+		ExcelUtil.createExcelRows(sheet, data);
 	}
 
 	private void generateBankSheet(XSSFWorkbook workbook) {

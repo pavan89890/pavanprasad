@@ -31,9 +31,6 @@ public class Events extends BaseEntity{
 	@Column(name = "EVENT_NAME")
 	private String eventName;
 	
-	@Column(name = "EVENT_DESC")
-	private String eventDesc;
-
 	@Column(name = "EVENT_DATE")
 	private Date eventDate;
 	
