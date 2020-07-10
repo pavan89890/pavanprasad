@@ -14,6 +14,7 @@ import com.pavan.repository.ChitRepository;
 import com.pavan.repository.FdRespository;
 import com.pavan.repository.MfRespository;
 import com.pavan.service.AssetService;
+import com.pavan.util.Utility;
 
 @Service
 public class AssetServiceImpl implements AssetService {
@@ -43,11 +44,11 @@ public class AssetServiceImpl implements AssetService {
 		Float totalBalance = (bankBalance != null ? bankBalance : 0f) + (chitBalance != null ? chitBalance : 0f)
 				+ (fdBalance != null ? fdBalance : 0f) + (mfBalance != null ? mfBalance : 0f);
 
-		data.put("bankBalance", bankBalance != null ? bankBalance : 0f);
-		data.put("chitBalance", chitBalance != null ? chitBalance : 0f);
-		data.put("fdBalance", fdBalance != null ? fdBalance : 0f);
-		data.put("mfBalance", mfBalance != null ? mfBalance : 0f);
-		data.put("totalBalance", totalBalance);
+		data.put("bankBalance", bankBalance != null ? Utility.formatNumber(bankBalance) : 0f);
+		data.put("chitBalance", chitBalance != null ? Utility.formatNumber(chitBalance) : 0f);
+		data.put("fdBalance", fdBalance != null ? Utility.formatNumber(fdBalance) : 0f);
+		data.put("mfBalance", mfBalance != null ? Utility.formatNumber(mfBalance) : 0f);
+		data.put("totalBalance", Utility.formatNumber(totalBalance));
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}

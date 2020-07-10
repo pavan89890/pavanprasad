@@ -52,7 +52,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		}
 
 		data.put("expenses", expenseBeans);
-		data.put("totalExpenses", totalExpense);
+		data.put("totalExpenses", Utility.formatNumber(totalExpense));
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
@@ -61,7 +61,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		ExpenseBean expenseBean = new ExpenseBean();
 		expenseBean.setId(expense.getId());
 		expenseBean.setName(expense.getName());
-		expenseBean.setAmount(expense.getAmount());
+		expenseBean.setAmount(Utility.formatNumber(expense.getAmount()));
 		if (expense.getDate() != null) {
 			expenseBean.setExpenseDateStr(DateUtil.yyyy_MM_dd.format(expense.getDate()));
 		}
@@ -83,7 +83,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setUser(user);
 		expense.setExpenseType(expenseBean.getExpenseType());
 		expense.setName(expenseBean.getName());
-		expense.setAmount(expenseBean.getAmount());
+		expense.setAmount(Utility.formatNumber(expenseBean.getAmount()));
 		if (!Utility.isEmpty(expenseBean.getExpenseDateStr())) {
 			expense.setDate(DateUtil.yyyy_MM_dd.parse(expenseBean.getExpenseDateStr()));
 		}

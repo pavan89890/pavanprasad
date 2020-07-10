@@ -51,9 +51,9 @@ public class ChitServiceImpl implements ChitService {
 
 		data.put("chits", chitBeans);
 
-		data.put("totalDeposited", totalDeposited);
-		data.put("totalMatured", 3 * 12 * 6000);
-		data.put("totalProfit", totalProfit);
+		data.put("totalDeposited", Utility.formatNumber(totalDeposited));
+		data.put("totalMatured", Utility.formatNumber(3 * 12 * 6000f));
+		data.put("totalProfit", Utility.formatNumber(totalProfit));
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
@@ -64,9 +64,9 @@ public class ChitServiceImpl implements ChitService {
 		bean.setMonth(chit.getMonth());
 		bean.setMonthStr(DateUtil.getMonthName(chit.getMonth()));
 		bean.setYear(chit.getYear());
-		bean.setActualAmount(chit.getActualAmount());
-		bean.setPaidAmount(chit.getPaidAmount());
-		bean.setProfit(chit.getProfit());
+		bean.setActualAmount(Utility.formatNumber(chit.getActualAmount()));
+		bean.setPaidAmount(Utility.formatNumber(chit.getPaidAmount()));
+		bean.setProfit(Utility.formatNumber(chit.getProfit()));
 		return bean;
 	}
 
@@ -83,9 +83,9 @@ public class ChitServiceImpl implements ChitService {
 		}
 		chit.setMonth(chitBean.getMonth());
 		chit.setYear(chitBean.getYear());
-		chit.setActualAmount(chitBean.getActualAmount());
-		chit.setPaidAmount(chitBean.getPaidAmount());
-		chit.setProfit(chit.getActualAmount() - chitBean.getPaidAmount());
+		chit.setActualAmount(Utility.formatNumber(chitBean.getActualAmount()));
+		chit.setPaidAmount(Utility.formatNumber(chitBean.getPaidAmount()));
+		chit.setProfit(Utility.formatNumber(chit.getActualAmount() - chitBean.getPaidAmount()));
 		chit.setUser(currentUser);
 
 		Chit c = null;

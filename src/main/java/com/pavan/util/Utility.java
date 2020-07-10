@@ -2,12 +2,15 @@ package com.pavan.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 public class Utility {
+
+	public static final DecimalFormat decimalFormatter = new DecimalFormat("#.##");
 
 	public static boolean isEmpty(Object obj) {
 		try {
@@ -58,5 +61,17 @@ public class Utility {
 		}
 		return decrypted;
 	}
+	
+	public static void main(String[] args) {
+		System.out.println(formatNumber(0.123456f));
+	}
 
+	public static Float formatNumber(Float input) {
+		Float res = null;
+		if (input == null) {
+			return null;
+		}
+		res = Float.valueOf(decimalFormatter.format(input));
+		return res;
+	}
 }

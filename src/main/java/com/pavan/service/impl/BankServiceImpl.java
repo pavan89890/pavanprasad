@@ -38,7 +38,7 @@ public class BankServiceImpl implements BankService {
 		Float totalBalance = bankRepository.getTotalBalance(currentUser);
 
 		data.put("banks", banks);
-		data.put("totalBalance", totalBalance);
+		data.put("totalBalance", Utility.formatNumber(totalBalance));
 
 		return new ApiResponse(HttpStatus.OK, null, data);
 	}
@@ -55,7 +55,7 @@ public class BankServiceImpl implements BankService {
 			bank.setId(bankBean.getId());
 		}
 		bank.setName(bankBean.getName());
-		bank.setBalance(bankBean.getBalance());
+		bank.setBalance(Utility.formatNumber(bankBean.getBalance()));
 		bank.setUser(currentUser);
 
 		Bank c = bankRepository.findByUserAndName(currentUser, bank.getName());

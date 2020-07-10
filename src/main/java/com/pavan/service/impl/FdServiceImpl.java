@@ -41,8 +41,8 @@ public class FdServiceImpl implements FdService {
 		}
 		fd.setBank(fdBean.getBank());
 		fd.setFdrNo(fdBean.getFdrNo());
-		fd.setDepAmount(fdBean.getDepAmount());
-		fd.setRoi(fdBean.getRoi());
+		fd.setDepAmount(Utility.formatNumber(fdBean.getDepAmount()));
+		fd.setRoi(Utility.formatNumber(fdBean.getRoi()));
 		fd.setUser(currentUser);
 
 		Float maturedAmount = 0f;
@@ -50,7 +50,7 @@ public class FdServiceImpl implements FdService {
 			maturedAmount = (fdBean.getDepAmount() * (fdBean.getRoi() / 100));
 		}
 
-		fd.setMaturedAmount(fdBean.getDepAmount() + maturedAmount);
+		fd.setMaturedAmount(Utility.formatNumber(fdBean.getDepAmount() + maturedAmount));
 
 		Date depositedOn = null;
 
@@ -126,10 +126,10 @@ public class FdServiceImpl implements FdService {
 		fdBean.setId(fd.getId());
 		fdBean.setBank(fd.getBank());
 		fdBean.setFdrNo(fd.getFdrNo());
-		fdBean.setDepAmount(fd.getDepAmount());
-		fdBean.setRoi(fd.getRoi());
+		fdBean.setDepAmount(Utility.formatNumber(fd.getDepAmount()));
+		fdBean.setRoi(Utility.formatNumber(fd.getRoi()));
 
-		fdBean.setMaturedAmount(fd.getMaturedAmount());
+		fdBean.setMaturedAmount(Utility.formatNumber(fd.getMaturedAmount()));
 
 		if (fd.getDepositedOn() != null) {
 			fdBean.setDepositedOnStr(DateUtil.yyyy_MM_dd.format(fd.getDepositedOn()));
@@ -148,7 +148,7 @@ public class FdServiceImpl implements FdService {
 
 		}
 
-		fdBean.setProfit(fdBean.getMaturedAmount() - fdBean.getDepAmount());
+		fdBean.setProfit(Utility.formatNumber(fdBean.getMaturedAmount() - fdBean.getDepAmount()));
 		return fdBean;
 	}
 
