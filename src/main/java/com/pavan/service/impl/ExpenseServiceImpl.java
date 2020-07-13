@@ -81,7 +81,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setExpenseType(expenseBean.getExpenseType());
 		expense.setName(expenseBean.getName());
 		expense.setAmount(Utility.formatNumber(expenseBean.getAmount()));
-		expense.setDate(expense.getDate());
+		expense.setDate(expenseBean.getExpenseDate());
 		expenseRepository.save(expense);
 	}
 
