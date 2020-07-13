@@ -1,5 +1,7 @@
 package com.pavan.beans;
 
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +13,7 @@ public class MutualFundBean {
 	private String desc;
 	private Float investedAmount;
 	private Float currentAmount;
-	private String depositedOnStr;
+	private Date depositedOn;
 	private Float profitOrLossAmount;
 	private Float profitOrLossPerc;
 }

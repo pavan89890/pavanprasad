@@ -1,6 +1,5 @@
 package com.pavan.service.impl;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -63,14 +62,7 @@ public class EventServiceImpl implements EventService {
 			bean.setId(event.getId());
 			bean.setEventType(event.getEventType());
 			bean.setEventName(event.getEventName());
-
-			String eventDateStr = null;
-
-			if (!Utility.isEmpty(event.getEventDate())) {
-				eventDateStr = DateUtil.yyyy_MM_dd.format(event.getEventDate());
-			}
-
-			bean.setEventDateStr(eventDateStr);
+			bean.setEventDate(event.getEventDate());
 
 			Date date1 = new Date();
 
@@ -98,19 +90,7 @@ public class EventServiceImpl implements EventService {
 		event.setEventType(eventBean.getEventType());
 		event.setEventName(eventBean.getEventName());
 		event.setUser(user);
-
-		Date eventDate = null;
-
-		if (!Utility.isEmpty(eventBean.getEventDateStr())) {
-			try {
-				eventDate = DateUtil.yyyy_MM_dd.parse(eventBean.getEventDateStr());
-			} catch (ParseException e) {
-				message = e.getMessage();
-				throw new Exception(message);
-			}
-		}
-
-		event.setEventDate(eventDate);
+		event.setEventDate(eventBean.getEventDate());
 
 		Events c = eventRepository.findByUserAndEventName(user, event.getEventName());
 
@@ -137,7 +117,7 @@ public class EventServiceImpl implements EventService {
 			return false;
 		}
 
-		if (Utility.isEmpty(bean.getEventDateStr())) {
+		if (Utility.isEmpty(bean.getEventDate())) {
 			message = "Please Enter Event Date";
 			return false;
 		}

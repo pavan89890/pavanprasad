@@ -1,5 +1,7 @@
 package com.pavan.beans;
 
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,9 +14,9 @@ public class FdBean {
 	private Float depAmount;
 	private Float roi;
 	private Float maturedAmount;
-	private String depositedOnStr;
+	private Date depositedOn;
 	private Integer periodInMonths;
-	private String maturedOnStr;
+	private Date maturedOn;
 	private String remainingTime;
 	private Float profit;
 }

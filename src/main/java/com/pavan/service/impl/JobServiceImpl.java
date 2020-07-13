@@ -45,15 +45,8 @@ public class JobServiceImpl implements JobService {
 		job.setDesignation(jobBean.getDesignation());
 		job.setCurrent(jobBean.getCurrent() == null ? false : jobBean.getCurrent());
 		try {
-			if (!Utility.isEmpty(jobBean.getDojStr())) {
-
-				job.setDoj(DateUtil.yyyy_MM_dd.parse(jobBean.getDojStr()));
-
-			}
-
-			if (!Utility.isEmpty(jobBean.getDolStr())) {
-				job.setDol(DateUtil.yyyy_MM_dd.parse(jobBean.getDolStr()));
-			}
+			job.setDoj(jobBean.getDoj());
+			job.setDol(jobBean.getDol());
 
 		} catch (Exception e) {
 			message = e.getMessage();
@@ -76,7 +69,7 @@ public class JobServiceImpl implements JobService {
 			return false;
 		}
 
-		if (Utility.isEmpty(bean.getDojStr())) {
+		if (Utility.isEmpty(bean.getDoj())) {
 			message = "Please Select DOJ";
 			return false;
 		}
@@ -125,14 +118,8 @@ public class JobServiceImpl implements JobService {
 		jobBean.setCompany(job.getCompany());
 		jobBean.setDesignation(job.getDesignation());
 		jobBean.setCurrent(job.getCurrent() == null ? false : job.getCurrent());
-
-		if (job.getDoj() != null) {
-			jobBean.setDojStr(DateUtil.yyyy_MM_dd.format(job.getDoj()));
-		}
-
-		if (job.getDol() != null) {
-			jobBean.setDolStr(DateUtil.yyyy_MM_dd.format(job.getDol()));
-		}
+		jobBean.setDoj(job.getDoj());
+		jobBean.setDol(job.getDol());
 
 		LocalDate date1 = job.getDoj().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 

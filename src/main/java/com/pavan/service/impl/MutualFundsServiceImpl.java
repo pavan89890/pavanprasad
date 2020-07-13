@@ -1,8 +1,6 @@
 package com.pavan.service.impl;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,6 @@ import com.pavan.modal.MutualFund;
 import com.pavan.modal.User;
 import com.pavan.repository.MfRespository;
 import com.pavan.service.MutualFundService;
-import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -45,19 +42,7 @@ public class MutualFundsServiceImpl implements MutualFundService {
 		mf.setInvestedAmount(Utility.formatNumber(mfBean.getInvestedAmount()));
 		mf.setCurrentAmount(Utility.formatNumber(mfBean.getCurrentAmount()));
 		mf.setUser(currentUser);
-
-		Date depositedOn = null;
-
-		if (!Utility.isEmpty(mfBean.getDepositedOnStr())) {
-			try {
-				depositedOn = DateUtil.yyyy_MM_dd.parse(mfBean.getDepositedOnStr());
-			} catch (ParseException e) {
-				message = e.getMessage();
-				throw new Exception(message);
-			}
-		}
-
-		mf.setDepositedOn(depositedOn);
+		mf.setDepositedOn(mfBean.getDepositedOn());
 
 		mfRepository.save(mf);
 
@@ -119,14 +104,14 @@ public class MutualFundsServiceImpl implements MutualFundService {
 		Float totalCurrent = mfRepository.getTotalCurrent(currentUser);
 
 		Float totalProfitprofitOrLossAmount = totalCurrent - totalInvested;
-		
-		Float totalProfitprofitOrLossPerc = (totalProfitprofitOrLossAmount/totalInvested)*100;
+
+		Float totalProfitprofitOrLossPerc = (totalProfitprofitOrLossAmount / totalInvested) * 100;
 
 		data.put("mfs", mfBeans);
-		
+
 		data.put("totalInvested", Utility.formatNumber(totalInvested));
 		data.put("totalCurrent", Utility.formatNumber(totalCurrent));
-		
+
 		data.put("totalProfitprofitOrLossAmount", Utility.formatNumber(totalProfitprofitOrLossAmount));
 		data.put("totalProfitprofitOrLossPerc", Utility.formatNumber(totalProfitprofitOrLossPerc));
 
@@ -141,13 +126,10 @@ public class MutualFundsServiceImpl implements MutualFundService {
 		mfBean.setDesc(mf.getDesc());
 		mfBean.setInvestedAmount(Utility.formatNumber(mf.getInvestedAmount()));
 		mfBean.setCurrentAmount(Utility.formatNumber(mf.getCurrentAmount()));
-
-		if (mf.getDepositedOn() != null) {
-			mfBean.setDepositedOnStr(DateUtil.yyyy_MM_dd.format(mf.getDepositedOn()));
-		}
-
+		mfBean.setDepositedOn(mf.getDepositedOn());
 		mfBean.setProfitOrLossAmount(Utility.formatNumber(mfBean.getCurrentAmount() - mfBean.getInvestedAmount()));
-		mfBean.setProfitOrLossPerc(Utility.formatNumber((mfBean.getProfitOrLossAmount() / mfBean.getInvestedAmount()) * 100));
+		mfBean.setProfitOrLossPerc(
+				Utility.formatNumber((mfBean.getProfitOrLossAmount() / mfBean.getInvestedAmount()) * 100));
 		return mfBean;
 	}
 

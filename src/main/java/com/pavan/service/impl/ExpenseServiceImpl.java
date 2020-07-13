@@ -16,7 +16,6 @@ import com.pavan.modal.Expense;
 import com.pavan.modal.User;
 import com.pavan.repository.ExpenseRepository;
 import com.pavan.service.ExpenseService;
-import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -33,17 +32,17 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 		List<Expense> expenses = null;
 		if (!Utility.isEmpty(expenseType)) {
-			expenses = expenseRepository.getUserExpensesByTypeOrderByDateDesc(expenseType,user);
+			expenses = expenseRepository.getUserExpensesByTypeOrderByDateDesc(expenseType, user);
 		} else {
 			expenses = expenseRepository.getUserExpensesOrderByDateDesc(user);
 		}
 
 		List<ExpenseBean> expenseBeans = new ArrayList<ExpenseBean>();
 
-		Float totalExpense=0f;
+		Float totalExpense = 0f;
 		for (Expense expense : expenses) {
 			ExpenseBean expenseBean = toBean(expense);
-			totalExpense+=expenseBean.getAmount()!=null?expense.getAmount():0f;
+			totalExpense += expenseBean.getAmount() != null ? expense.getAmount() : 0f;
 			expenseBeans.add(expenseBean);
 		}
 
@@ -62,9 +61,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expenseBean.setId(expense.getId());
 		expenseBean.setName(expense.getName());
 		expenseBean.setAmount(Utility.formatNumber(expense.getAmount()));
-		if (expense.getDate() != null) {
-			expenseBean.setExpenseDateStr(DateUtil.yyyy_MM_dd.format(expense.getDate()));
-		}
+		expenseBean.setExpenseDate(expense.getDate());
 		expenseBean.setExpenseType(expense.getExpenseType());
 		return expenseBean;
 	}
@@ -84,9 +81,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setExpenseType(expenseBean.getExpenseType());
 		expense.setName(expenseBean.getName());
 		expense.setAmount(Utility.formatNumber(expenseBean.getAmount()));
-		if (!Utility.isEmpty(expenseBean.getExpenseDateStr())) {
-			expense.setDate(DateUtil.yyyy_MM_dd.parse(expenseBean.getExpenseDateStr()));
-		}
+		expense.setDate(expense.getDate());
 		expenseRepository.save(expense);
 	}
 

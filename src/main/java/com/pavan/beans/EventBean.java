@@ -1,5 +1,7 @@
 package com.pavan.beans;
 
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +15,7 @@ public class EventBean {
 
 	private String eventName;
 	
-	private String eventDateStr;
+	private Date eventDate;
 
 	private boolean isToday;
 }

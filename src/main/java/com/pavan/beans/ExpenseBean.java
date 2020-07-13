@@ -1,5 +1,7 @@
 package com.pavan.beans;
 
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,5 +12,5 @@ public class ExpenseBean {
 	private String expenseType;
 	private String name;
 	private Float amount;
-	private String expenseDateStr;
+	private Date expenseDate;
 }

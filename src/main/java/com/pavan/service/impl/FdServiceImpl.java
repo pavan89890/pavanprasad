@@ -1,6 +1,5 @@
 package com.pavan.service.impl;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -51,26 +50,14 @@ public class FdServiceImpl implements FdService {
 		}
 
 		fd.setMaturedAmount(Utility.formatNumber(fdBean.getDepAmount() + maturedAmount));
-
-		Date depositedOn = null;
-
-		if (!Utility.isEmpty(fdBean.getDepositedOnStr())) {
-			try {
-				depositedOn = DateUtil.yyyy_MM_dd.parse(fdBean.getDepositedOnStr());
-			} catch (ParseException e) {
-				message = e.getMessage();
-				throw new Exception(message);
-			}
-		}
-
-		fd.setDepositedOn(depositedOn);
+		fd.setDepositedOn(fdBean.getDepositedOn());
 		fd.setPeriodInMonths(fdBean.getPeriodInMonths());
 
 		Date maturedOn = null;
 
-		if (!Utility.isEmpty(depositedOn) && !Utility.isEmpty(fdBean.getPeriodInMonths())) {
+		if (!Utility.isEmpty(fdBean.getDepositedOn()) && !Utility.isEmpty(fdBean.getPeriodInMonths())) {
 			Calendar c = Calendar.getInstance();
-			c.setTime(depositedOn);
+			c.setTime(fdBean.getDepositedOn());
 			c.add(Calendar.MONTH, fdBean.getPeriodInMonths());
 			maturedOn = c.getTime();
 		}
@@ -130,15 +117,12 @@ public class FdServiceImpl implements FdService {
 		fdBean.setRoi(Utility.formatNumber(fd.getRoi()));
 
 		fdBean.setMaturedAmount(Utility.formatNumber(fd.getMaturedAmount()));
-
-		if (fd.getDepositedOn() != null) {
-			fdBean.setDepositedOnStr(DateUtil.yyyy_MM_dd.format(fd.getDepositedOn()));
-		}
+		fdBean.setDepositedOn(fd.getDepositedOn());
 
 		fdBean.setPeriodInMonths(fd.getPeriodInMonths());
 
 		if (fd.getMaturedOn() != null) {
-			fdBean.setMaturedOnStr(DateUtil.yyyy_MM_dd.format(fd.getMaturedOn()));
+			fdBean.setMaturedOn(fd.getMaturedOn());
 
 			LocalDate date1 = LocalDate.now();
 
@@ -183,7 +167,7 @@ public class FdServiceImpl implements FdService {
 	public ApiResponse deleteFds(User currentUser) {
 		if (currentUser != null) {
 			fdRepository.deleteByUser(currentUser);
-			message = "Hi "+currentUser.getName()+", Fixed Deposits deleted successfully";
+			message = "Hi " + currentUser.getName() + ", Fixed Deposits deleted successfully";
 		} else {
 			fdRepository.deleteAll();
 			message = "Fixed Deposits deleted successfully";
