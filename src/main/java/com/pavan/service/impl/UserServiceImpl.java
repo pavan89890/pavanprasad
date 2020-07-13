@@ -1,10 +1,8 @@
 package com.pavan.service.impl;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,28 +59,8 @@ public class UserServiceImpl implements UserService {
 		user.setEmail(userBean.getEmail());
 		user.setMobile(userBean.getMobile());
 		user.setPassword(userBean.getPassword());
-
-		Date oriDob = null, cerDob = null;
-
-		if (!Utility.isEmpty(userBean.getOriDobStr())) {
-			try {
-				oriDob = DateUtil.yyyy_MM_dd.parse(userBean.getOriDobStr());
-				user.setOriDob(oriDob);
-			} catch (ParseException e) {
-				message = e.getMessage();
-				throw new Exception(message);
-			}
-		}
-
-		if (!Utility.isEmpty(userBean.getCerDobStr())) {
-			try {
-				cerDob = DateUtil.yyyy_MM_dd.parse(userBean.getCerDobStr());
-				user.setCerDob(cerDob);
-			} catch (ParseException e) {
-				message = e.getMessage();
-				throw new Exception(message);
-			}
-		}
+		user.setOriDob(userBean.getOriDob());
+		user.setCerDob(userBean.getCerDob());
 
 		User c = usersRepository.findByMobile(user.getMobile());
 
@@ -148,13 +126,13 @@ public class UserServiceImpl implements UserService {
 			LocalDate currentDate = LocalDate.now();
 
 			if (user.getOriDob() != null) {
-				bean.setOriDobStr(DateUtil.yyyy_MM_dd.format(user.getOriDob()));
+				bean.setOriDob(user.getOriDob());
 				LocalDate oriLocalDate = user.getOriDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				bean.setOriAgeStr(DateUtil.getDateDifference(oriLocalDate, currentDate));
 			}
 
 			if (user.getCerDob() != null) {
-				bean.setCerDobStr(DateUtil.yyyy_MM_dd.format(user.getCerDob()));
+				bean.setCerDob(user.getCerDob());
 				LocalDate cerLocalDate = user.getCerDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				bean.setCerAgeStr(DateUtil.getDateDifference(cerLocalDate, currentDate));
 			}
