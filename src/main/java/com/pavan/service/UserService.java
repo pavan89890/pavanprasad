@@ -21,7 +21,7 @@ public interface UserService {
 
 	public User getUserFromToken(String userToken);
 
-	public UserBean getUser(String email, String password);
+	public UserBean getUser(String username, String password);
 
 	public ApiResponse getUserResponseFromToken(String userToken);
 

@@ -185,8 +185,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserBean getUser(String email, String password) {
-		User user = usersRepository.findByEmailAndPassword(email, password);
+	public UserBean getUser(String username, String password) {
+		User user = usersRepository.findByEmailOrMobileAndPassword(username, password);
 		UserBean userBean = toUserBean(user);
 		return userBean;
 	}
