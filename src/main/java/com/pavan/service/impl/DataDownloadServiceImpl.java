@@ -20,6 +20,7 @@ import com.pavan.modal.Expense;
 import com.pavan.modal.Fd;
 import com.pavan.modal.Job;
 import com.pavan.modal.MutualFund;
+import com.pavan.modal.Todo;
 import com.pavan.modal.User;
 import com.pavan.repository.BankRepository;
 import com.pavan.repository.ChitRepository;
@@ -28,6 +29,7 @@ import com.pavan.repository.ExpenseRepository;
 import com.pavan.repository.FdRespository;
 import com.pavan.repository.JobRespository;
 import com.pavan.repository.MfRespository;
+import com.pavan.repository.TodoRepository;
 import com.pavan.repository.UserRespository;
 import com.pavan.service.DataDownloadService;
 import com.pavan.util.DateUtil;
@@ -55,6 +57,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 	@Autowired
 	private UserRespository userRepository;
+
+	@Autowired
+	private TodoRepository todoRepository;
 
 	@Autowired
 	private MfRespository mfRepository;
@@ -111,6 +116,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		generateJobSheet(workbook);
 		generateEventSheet(workbook);
 		generateUserSheet(workbook);
+		generateTodoSheet(workbook);
 
 		workbook.write(bos);
 
@@ -133,10 +139,10 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		List<Events> events = eventRepository.findAll();
 
 		for (Events event : events) {
-			data.add(
-					new Object[] { event.getId(), event.getUser() != null ? event.getUser().getId() : null, event.getEventType(),
-							event.getEventName(),DateUtil.dateToStr(event.getEventDate()), event.getCreatedOn() != null ? event.getCreatedOn().toString() : null,
-							event.getUpdatedOn() != null ? event.getUpdatedOn().toString() : null });
+			data.add(new Object[] { event.getId(), event.getUser() != null ? event.getUser().getId() : null,
+					event.getEventType(), event.getEventName(), DateUtil.dateToStr(event.getEventDate()),
+					event.getCreatedOn() != null ? event.getCreatedOn().toString() : null,
+					event.getUpdatedOn() != null ? event.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);
@@ -287,6 +293,31 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 					DateUtil.dateToStr(user.getOriDob()), DateUtil.dateToStr(user.getCerDob()),
 					user.getCreatedOn() != null ? user.getCreatedOn().toString() : null,
 					user.getUpdatedOn() != null ? user.getUpdatedOn().toString() : null });
+		}
+
+		ExcelUtil.createExcelRows(sheet, data);
+	}
+
+	private void generateTodoSheet(XSSFWorkbook workbook) {
+		// Create Job sheet
+		XSSFSheet sheet = workbook.createSheet("To do");
+
+		String headers[] = new String[] { "ID", "USER_ID", "TODO", "PRIORITY", "STATUS", "CREATED_ON", "UPDATED_ON",
+				"USER_ID" };
+
+		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
+
+		ExcelUtil.createExcelHeader(sheet, headers, headerStyle);
+
+		List<Object[]> data = new ArrayList<Object[]>();
+
+		List<Todo> todos = todoRepository.findAll();
+
+		for (Todo todo : todos) {
+			data.add(new Object[] { todo.getId(), todo.getUser() != null ? todo.getUser().getId() : null,
+					todo.getTodo(), todo.getPriority(), todo.isStatus(),
+					todo.getCreatedOn() != null ? todo.getCreatedOn().toString() : null,
+					todo.getUpdatedOn() != null ? todo.getUpdatedOn().toString() : null });
 		}
 
 		ExcelUtil.createExcelRows(sheet, data);
