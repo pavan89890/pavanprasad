@@ -20,6 +20,9 @@ public interface BankRepository extends JpaRepository<Bank, Long> {
 
 	@Query(value = "select sum(balance) from Bank where user=:user")
 	public Float getTotalBalance(@Param("user") User user);
+	
+	@Query(value = "select sum(balance) from Bank where user=:user and name<>'PPF Sbi'")
+	public Float getBankBalanceWithoutPPF(@Param("user") User user);
 
 	@Modifying
 	@Query("delete from Bank b where b.user=:user")
