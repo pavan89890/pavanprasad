@@ -39,14 +39,15 @@ public class AssetServiceImpl implements AssetService {
 		Float bankBalance = bankRepository.getTotalBalance(currentUser);
 		Float bankBalanceWithoutPPF = bankRepository.getBankBalanceWithoutPPF(currentUser);
 		Float chitBalance = chitRepository.getTotalDeposited(currentUser);
+		chitBalance = null; // Chit is closed
 		Float fdBalance = fdRepository.getTotalDeposited(currentUser);
 		Float mfBalance = mfRepository.getTotalCurrent(currentUser);
 
 		Float totalBalance = (bankBalance != null ? bankBalance : 0f) + (chitBalance != null ? chitBalance : 0f)
 				+ (fdBalance != null ? fdBalance : 0f) + (mfBalance != null ? mfBalance : 0f);
-		
-		Float totalGross = (bankBalanceWithoutPPF != null ? bankBalanceWithoutPPF : 0f) + (chitBalance != null ? chitBalance : 0f)
-				+ (fdBalance != null ? fdBalance : 0f);
+
+		Float totalGross = (bankBalanceWithoutPPF != null ? bankBalanceWithoutPPF : 0f)
+				+ (chitBalance != null ? chitBalance : 0f) + (fdBalance != null ? fdBalance : 0f);
 
 		data.put("bankBalance", bankBalance != null ? Utility.formatNumber(bankBalance) : 0f);
 		data.put("chitBalance", chitBalance != null ? Utility.formatNumber(chitBalance) : 0f);
