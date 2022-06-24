@@ -4,3 +4,18 @@ Tasks:
 3)Issue solving with excel data download at angular side.
 4)Amount format with 2 decimal points in all the screens.
 5)Date format with 17-Sep-1993.
+
+Host
+ec2-52-72-99-110.compute-1.amazonaws.com
+Database
+d12a9din3lrfve
+User
+ikgantbphkyypl
+Port
+5432
+Password
+c347ffe31b32e46561ce020eed7ffe168ad5e482b63153e5dcc569a3db0b97be
+URI
+postgres://ikgantbphkyypl:c347ffe31b32e46561ce020eed7ffe168ad5e482b63153e5dcc569a3db0b97be@ec2-52-72-99-110.compute-1.amazonaws.com:5432/d12a9din3lrfve
+Heroku CLI
+heroku pg:psql postgresql-cubic-91736 --app pavanprasad
