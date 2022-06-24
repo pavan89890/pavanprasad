@@ -1,5 +1,6 @@
 package com.pavan.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -56,4 +57,17 @@ public class DateUtil {
 		return dateStr;
 	}
 
+	public static Date objToDate(Object obj) {
+		if (obj == null) {
+			return null;
+		}
+		
+		String dateStr = (String) obj;
+		
+		try {
+			return yyyy_MM_dd.parse(dateStr);
+		} catch (ParseException e) {
+			return null;
+		}
+	}
 }

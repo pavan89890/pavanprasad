@@ -1,6 +1,7 @@
 package com.pavan.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,9 @@ import com.pavan.beans.ExpenseBean;
 import com.pavan.modal.Expense;
 import com.pavan.modal.User;
 import com.pavan.repository.ExpenseRepository;
+import com.pavan.repository.UserRespository;
 import com.pavan.service.ExpenseService;
+import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -23,6 +26,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Autowired
 	ExpenseRepository expenseRepository;
+	
+	@Autowired
+	UserRespository userRepository;
 
 	private String message = "";
 
@@ -137,6 +143,26 @@ public class ExpenseServiceImpl implements ExpenseService {
 			message = "Expenses deleted successfully";
 		}
 		return new ApiResponse(HttpStatus.OK, message, null);
+	}
+
+	@Override
+	public void bulkUpload(List<List<Object>> data) {
+		List<Expense> expenses = new ArrayList<>();
+		
+		for(List<Object> rowData : data.subList(1,data.size())) {
+			Expense expense = new Expense();
+			
+			expense.setUser(userRepository.getOne(Double.valueOf(rowData.get(1)+"").longValue()));
+			expense.setExpenseType((String) rowData.get(2));
+			expense.setName((String) rowData.get(3));
+			expense.setAmount(Double.valueOf(rowData.get(4)+"").floatValue());
+			expense.setDate(DateUtil.objToDate(rowData.get(5)));
+			
+			expenses.add(expense);
+		}
+		
+		expenseRepository.deleteAll();
+		expenseRepository.saveAll(expenses);
 	}
 
 }
