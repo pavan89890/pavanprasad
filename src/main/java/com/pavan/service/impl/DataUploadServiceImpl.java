@@ -67,11 +67,11 @@ public class DataUploadServiceImpl implements DataUploadService {
 
 	@Override
 	public Map<String, List<List<Object>>> extractExcelData(MultipartFile file) throws IOException {
-		Map<String, List<List<Object>>> data = extractExcekData(file.getInputStream());
+		Map<String, List<List<Object>>> data = extractExcelData(file.getInputStream());
 		return data;
 	}
 
-	private Map<String, List<List<Object>>> extractExcekData(InputStream inputStream) throws IOException {
+	private Map<String, List<List<Object>>> extractExcelData(InputStream inputStream) throws IOException {
 
 		Map<String, List<List<Object>>> excelData = new LinkedHashMap<>();
 
@@ -119,9 +119,11 @@ public class DataUploadServiceImpl implements DataUploadService {
 					rowData.add(currentCell.getCellFormula());
 					break;
 				case BLANK:
-					rowData.add("");
+					rowData.add(null);
 					break;
 				default:
+					rowData.add(null);
+					break;
 				}
 			}
 			sheetData.add(rowData);
