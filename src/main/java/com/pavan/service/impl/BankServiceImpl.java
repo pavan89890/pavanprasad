@@ -1,5 +1,6 @@
 package com.pavan.service.impl;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import com.pavan.beans.BankBean;
 import com.pavan.modal.Bank;
 import com.pavan.modal.User;
 import com.pavan.repository.BankRepository;
+import com.pavan.repository.UserRespository;
 import com.pavan.service.BankService;
 import com.pavan.util.Utility;
 
@@ -21,6 +23,9 @@ public class BankServiceImpl implements BankService {
 
 	@Autowired
 	BankRepository bankRepository;
+
+	@Autowired
+	UserRespository userRepository;
 
 	private String message = "";
 
@@ -117,11 +122,29 @@ public class BankServiceImpl implements BankService {
 		if (currentUser != null) {
 			bankRepository.deleteByUser(currentUser);
 			message = "Hi " + currentUser.getName() + ",all your banks deleted successfully";
-		}else {
+		} else {
 			bankRepository.deleteAll();
 			message = "Banks deleted successfully";
 		}
 		return new ApiResponse(HttpStatus.OK, message, null);
+	}
+
+	@Override
+	public void bulkUpload(List<List<Object>> data) {
+		List<Bank> banks = new ArrayList<>();
+
+		for (List<Object> rowData : data.subList(1, data.size())) {
+			Bank bank = new Bank();
+
+			bank.setUser(userRepository.getOne(Double.valueOf(rowData.get(1) + "").longValue()));
+			bank.setName((String) rowData.get(2));
+			bank.setBalance(Double.valueOf(rowData.get(3) + "").floatValue());
+
+			banks.add(bank);
+		}
+
+		bankRepository.deleteAll();
+		bankRepository.saveAll(banks);
 	}
 
 }

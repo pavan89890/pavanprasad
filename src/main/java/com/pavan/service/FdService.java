@@ -1,5 +1,7 @@
 package com.pavan.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
@@ -18,5 +20,7 @@ public interface FdService {
 	public ApiResponse deleteFd(Long id);
 
 	public ApiResponse deleteFds(User currentUser);
+
+	public void bulkUpload(List<List<Object>> data);
 	
 }

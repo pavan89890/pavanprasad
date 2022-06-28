@@ -1,5 +1,7 @@
 package com.pavan.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
@@ -18,5 +20,7 @@ public interface BankService {
 	public ApiResponse deleteBank(Long id);
 
 	public ApiResponse deleteBanks(User currentUser);
+
+	public void bulkUpload(List<List<Object>> data);
 
 }

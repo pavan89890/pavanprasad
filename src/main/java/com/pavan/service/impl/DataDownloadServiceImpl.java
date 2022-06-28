@@ -267,7 +267,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		for (Job job : jobs) {
 			data.add(new Object[] { job.getId(), job.getUser() != null ? job.getUser().getId() : null, job.getCompany(),
 					job.getDesignation(), DateUtil.dateToStr(job.getDoj()), DateUtil.dateToStr(job.getDol()),
-					job.getCurrent(), job.getCreatedOn() != null ? job.getCreatedOn().toString() : null,
+					job.getCurrent()?"true":"false", job.getCreatedOn() != null ? job.getCreatedOn().toString() : null,
 					job.getUpdatedOn() != null ? job.getUpdatedOn().toString() : null });
 		}
 
@@ -302,8 +302,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 		// Create Job sheet
 		XSSFSheet sheet = workbook.createSheet("To do");
 
-		String headers[] = new String[] { "ID", "USER_ID", "TODO", "PRIORITY", "STATUS", "CREATED_ON", "UPDATED_ON",
-				"USER_ID" };
+		String headers[] = new String[] { "ID", "USER_ID", "TODO", "PRIORITY", "STATUS", "CREATED_ON", "UPDATED_ON" };
 
 		CellStyle headerStyle = ExcelUtil.getHeaderStyle(workbook);
 
@@ -315,7 +314,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
 
 		for (Todo todo : todos) {
 			data.add(new Object[] { todo.getId(), todo.getUser() != null ? todo.getUser().getId() : null,
-					todo.getTodo(), todo.getPriority(), todo.isStatus(),
+					todo.getTodo(), todo.getPriority(), todo.isStatus()?"true":"false",
 					todo.getCreatedOn() != null ? todo.getCreatedOn().toString() : null,
 					todo.getUpdatedOn() != null ? todo.getUpdatedOn().toString() : null });
 		}

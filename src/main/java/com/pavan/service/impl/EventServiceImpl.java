@@ -16,6 +16,7 @@ import com.pavan.beans.EventBean;
 import com.pavan.modal.Events;
 import com.pavan.modal.User;
 import com.pavan.repository.EventRepository;
+import com.pavan.repository.UserRespository;
 import com.pavan.service.EventService;
 import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
@@ -26,6 +27,9 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	EventRepository eventRepository;
 
+	@Autowired
+	UserRespository userRepository;
+
 	private String message = "";
 
 	@Override
@@ -35,7 +39,7 @@ public class EventServiceImpl implements EventService {
 
 		List<Events> events = null;
 		if (!Utility.isEmpty(eventType)) {
-			events = eventRepository.getUserEventsByTypeOrderByDateAsc(user,eventType);
+			events = eventRepository.getUserEventsByTypeOrderByDateAsc(user, eventType);
 		} else {
 			events = eventRepository.getUserEventsOrderByDateAsc(user);
 		}
@@ -165,4 +169,22 @@ public class EventServiceImpl implements EventService {
 		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 
+	@Override
+	public void bulkUpload(List<List<Object>> data) {
+		List<Events> events = new ArrayList<>();
+
+		for (List<Object> rowData : data.subList(1, data.size())) {
+			Events event = new Events();
+
+			event.setUser(userRepository.getOne(Double.valueOf(rowData.get(1) + "").longValue()));
+			event.setEventType((String) rowData.get(2));
+			event.setEventName((String) rowData.get(3));
+			event.setEventDate(DateUtil.objToDate(rowData.get(4)));
+
+			events.add(event);
+		}
+
+		eventRepository.deleteAll();
+		eventRepository.saveAll(events);
+	}
 }

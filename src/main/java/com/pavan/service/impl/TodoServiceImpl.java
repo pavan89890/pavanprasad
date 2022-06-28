@@ -1,5 +1,6 @@
 package com.pavan.service.impl;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import com.pavan.beans.TodoBean;
 import com.pavan.modal.Todo;
 import com.pavan.modal.User;
 import com.pavan.repository.TodoRepository;
+import com.pavan.repository.UserRespository;
 import com.pavan.service.TodoService;
 import com.pavan.util.Utility;
 
@@ -21,6 +23,9 @@ public class TodoServiceImpl implements TodoService {
 
 	@Autowired
 	TodoRepository todoRepository;
+
+	@Autowired
+	UserRespository userRepository;
 
 	private String message = "";
 
@@ -54,7 +59,7 @@ public class TodoServiceImpl implements TodoService {
 		todo.setTodo(todoBean.getTodo());
 		todo.setPriority(todoBean.getPriority());
 		todo.setStatus(todoBean.isStatus());
-		
+
 		todo.setUser(currentUser);
 
 		Todo c = todoRepository.findByUserAndTodo(currentUser, todo.getTodo());
@@ -116,11 +121,34 @@ public class TodoServiceImpl implements TodoService {
 		if (currentUser != null) {
 			todoRepository.deleteByUser(currentUser);
 			message = "Hi " + currentUser.getName() + ",all your todos deleted successfully";
-		}else {
+		} else {
 			todoRepository.deleteAll();
 			message = "Todos deleted successfully";
 		}
 		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 
+	@Override
+	public void bulkUpload(List<List<Object>> data) {
+		List<Todo> todos = new ArrayList<>();
+
+		for (List<Object> rowData : data.subList(1, data.size())) {
+			Todo todo = new Todo();
+
+			todo.setUser(userRepository.getOne(Double.valueOf(rowData.get(1) + "").longValue()));
+			todo.setTodo((String) rowData.get(2));
+			todo.setPriority(Double.valueOf(rowData.get(3) + "").intValue());
+
+			if(rowData.get(4)!=null && (rowData.get(4) instanceof Boolean)) {
+				todo.setStatus((Boolean) rowData.get(4));
+			}else {
+				todo.setStatus(false);
+			}
+
+			todos.add(todo);
+		}
+
+		todoRepository.deleteAll();
+		todoRepository.saveAll(todos);
+	}
 }

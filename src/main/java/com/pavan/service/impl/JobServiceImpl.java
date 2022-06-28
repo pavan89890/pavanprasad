@@ -17,6 +17,7 @@ import com.pavan.beans.JobBean;
 import com.pavan.modal.Job;
 import com.pavan.modal.User;
 import com.pavan.repository.JobRespository;
+import com.pavan.repository.UserRespository;
 import com.pavan.service.JobService;
 import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
@@ -26,6 +27,9 @@ public class JobServiceImpl implements JobService {
 
 	@Autowired
 	JobRespository jobsRepository;
+
+	@Autowired
+	UserRespository userRepository;
 
 	private String message = "";
 
@@ -168,6 +172,32 @@ public class JobServiceImpl implements JobService {
 			message = "Jobs deleted successfully";
 		}
 		return new ApiResponse(HttpStatus.OK, message, null);
+	}
+
+	@Override
+	public void bulkUpload(List<List<Object>> data) {
+		List<Job> jobs = new ArrayList<>();
+
+		for (List<Object> rowData : data.subList(1, data.size())) {
+			Job job = new Job();
+
+			job.setUser(userRepository.getOne(Double.valueOf(rowData.get(1) + "").longValue()));
+			job.setCompany((String) rowData.get(2));
+			job.setDesignation((String) rowData.get(3));
+			job.setDoj(DateUtil.objToDate(rowData.get(4)));
+			job.setDol(DateUtil.objToDate(rowData.get(5)));
+			
+			if(rowData.get(6)!=null && (rowData.get(6) instanceof Boolean)) {
+				job.setCurrent((Boolean) rowData.get(6));
+			}else {
+				job.setCurrent(false);
+			}
+			
+			jobs.add(job);
+		}
+
+		jobsRepository.deleteAll();
+		jobsRepository.saveAll(jobs);
 	}
 
 }

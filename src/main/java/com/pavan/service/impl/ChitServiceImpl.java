@@ -15,6 +15,7 @@ import com.pavan.beans.ChitBean;
 import com.pavan.modal.Chit;
 import com.pavan.modal.User;
 import com.pavan.repository.ChitRepository;
+import com.pavan.repository.UserRespository;
 import com.pavan.service.ChitService;
 import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
@@ -24,6 +25,9 @@ public class ChitServiceImpl implements ChitService {
 
 	@Autowired
 	ChitRepository chitRepository;
+
+	@Autowired
+	UserRespository userRepository;
 
 	private String message = "";
 
@@ -171,4 +175,24 @@ public class ChitServiceImpl implements ChitService {
 
 	}
 
+	@Override
+	public void bulkUpload(List<List<Object>> data) {
+		List<Chit> chits = new ArrayList<>();
+
+		for (List<Object> rowData : data.subList(1, data.size())) {
+			Chit chit = new Chit();
+
+			chit.setUser(userRepository.getOne(Double.valueOf(rowData.get(1) + "").longValue()));
+			chit.setMonth(Double.valueOf(rowData.get(2) + "").intValue());
+			chit.setYear(Double.valueOf(rowData.get(3) + "").intValue());
+			chit.setActualAmount(Double.valueOf(rowData.get(4) + "").floatValue());
+			chit.setPaidAmount(Double.valueOf(rowData.get(5) + "").floatValue());
+			chit.setProfit(Double.valueOf(rowData.get(6) + "").floatValue());
+
+			chits.add(chit);
+		}
+
+		chitRepository.deleteAll();
+		chitRepository.saveAll(chits);
+	}
 }

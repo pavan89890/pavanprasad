@@ -1,5 +1,7 @@
 package com.pavan.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.pavan.beans.ApiResponse;
@@ -18,5 +20,7 @@ public interface JobService {
 	public ApiResponse deleteJob(Long id);
 
 	public ApiResponse deleteJobs(User user);
+
+	public void bulkUpload(List<List<Object>> data);
 
 }

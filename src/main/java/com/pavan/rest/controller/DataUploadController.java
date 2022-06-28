@@ -54,7 +54,7 @@ public class DataUploadController {
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseMessageBuilder().message(message).build());
 				} catch (Exception e) {
-					message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+					message = "Could not upload the file: " + file.getOriginalFilename() + "!"+e.getMessage();
 					return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
 							.body(new ResponseMessageBuilder().message(message).build());
 				}

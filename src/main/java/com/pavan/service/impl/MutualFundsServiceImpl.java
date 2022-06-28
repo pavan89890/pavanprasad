@@ -15,7 +15,9 @@ import com.pavan.beans.MutualFundBean;
 import com.pavan.modal.MutualFund;
 import com.pavan.modal.User;
 import com.pavan.repository.MfRespository;
+import com.pavan.repository.UserRespository;
 import com.pavan.service.MutualFundService;
+import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
 
 @Service
@@ -23,6 +25,9 @@ public class MutualFundsServiceImpl implements MutualFundService {
 
 	@Autowired
 	MfRespository mfRepository;
+
+	@Autowired
+	UserRespository userRepository;
 
 	private String message = "";
 
@@ -172,4 +177,24 @@ public class MutualFundsServiceImpl implements MutualFundService {
 		return new ApiResponse(HttpStatus.OK, message, null);
 	}
 
+	@Override
+	public void bulkUpload(List<List<Object>> data) {
+		List<MutualFund> mfs = new ArrayList<>();
+
+		for (List<Object> rowData : data.subList(1, data.size())) {
+			MutualFund mf = new MutualFund();
+
+			mf.setUser(userRepository.getOne(Double.valueOf(rowData.get(1) + "").longValue()));
+			mf.setName((String) rowData.get(2));
+			mf.setDesc((String) rowData.get(3));
+			mf.setInvestedAmount(Double.valueOf(rowData.get(4) + "").floatValue());
+			mf.setCurrentAmount(Double.valueOf(rowData.get(5) + "").floatValue());
+			mf.setDepositedOn(DateUtil.objToDate(rowData.get(6)));
+
+			mfs.add(mf);
+		}
+
+		mfRepository.deleteAll();
+		mfRepository.saveAll(mfs);
+	}
 }

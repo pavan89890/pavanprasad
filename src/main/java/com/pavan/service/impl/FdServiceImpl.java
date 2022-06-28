@@ -19,6 +19,7 @@ import com.pavan.beans.FdBean;
 import com.pavan.modal.Fd;
 import com.pavan.modal.User;
 import com.pavan.repository.FdRespository;
+import com.pavan.repository.UserRespository;
 import com.pavan.service.FdService;
 import com.pavan.util.DateUtil;
 import com.pavan.util.Utility;
@@ -29,6 +30,9 @@ public class FdServiceImpl implements FdService {
 	@Autowired
 	FdRespository fdRepository;
 
+	@Autowired
+	UserRespository userRepository;
+	
 	private String message = "";
 
 	@Override
@@ -173,6 +177,29 @@ public class FdServiceImpl implements FdService {
 			message = "Fixed Deposits deleted successfully";
 		}
 		return new ApiResponse(HttpStatus.OK, message, null);
+	}
+	
+	@Override
+	public void bulkUpload(List<List<Object>> data) {
+		List<Fd> fds = new ArrayList<>();
+
+		for (List<Object> rowData : data.subList(1, data.size())) {
+			Fd fd = new Fd();
+
+			fd.setUser(userRepository.getOne(Double.valueOf(rowData.get(1) + "").longValue()));
+			fd.setBank((String) rowData.get(2));
+			fd.setDepAmount(Double.valueOf(rowData.get(3) + "").floatValue());
+			fd.setRoi(Double.valueOf(rowData.get(4) + "").floatValue());
+			fd.setMaturedAmount(Double.valueOf(rowData.get(5) + "").floatValue());
+			fd.setDepositedOn(DateUtil.objToDate(rowData.get(6)));
+			fd.setPeriodInMonths(Double.valueOf(rowData.get(7) + "").intValue());
+			fd.setMaturedOn(DateUtil.objToDate(rowData.get(8)));
+			
+			fds.add(fd);
+		}
+
+		fdRepository.deleteAll();
+		fdRepository.saveAll(fds);
 	}
 
 }

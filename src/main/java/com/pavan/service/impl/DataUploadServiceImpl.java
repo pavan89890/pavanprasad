@@ -18,8 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.pavan.service.BankService;
+import com.pavan.service.ChitService;
 import com.pavan.service.DataUploadService;
+import com.pavan.service.EventService;
 import com.pavan.service.ExpenseService;
+import com.pavan.service.FdService;
+import com.pavan.service.JobService;
+import com.pavan.service.MutualFundService;
+import com.pavan.service.TodoService;
 
 @Service
 public class DataUploadServiceImpl implements DataUploadService {
@@ -28,6 +35,27 @@ public class DataUploadServiceImpl implements DataUploadService {
 
 	@Autowired
 	private ExpenseService expenseService;
+
+	@Autowired
+	private BankService bankService;
+
+	@Autowired
+	private ChitService chitService;
+
+	@Autowired
+	private FdService fdService;
+
+	@Autowired
+	private MutualFundService mfService;
+
+	@Autowired
+	private JobService jobService;
+
+	@Autowired
+	private EventService eventService;
+
+	@Autowired
+	private TodoService todoService;
 
 	@Override
 	public boolean hasExcelFormat(MultipartFile file) {
@@ -109,14 +137,30 @@ public class DataUploadServiceImpl implements DataUploadService {
 			switch (entry.getKey()) {
 			case "Expense":
 				expenseService.bulkUpload(entry.getValue());
+				break;
 			case "Bank":
+				bankService.bulkUpload(entry.getValue());
+				break;
 			case "Chit":
+				chitService.bulkUpload(entry.getValue());
+				break;
 			case "Fd":
+				fdService.bulkUpload(entry.getValue());
+				break;
 			case "Mutual Fund":
+				mfService.bulkUpload(entry.getValue());
+				break;
 			case "Job":
+				jobService.bulkUpload(entry.getValue());
+				break;
 			case "Event":
+				eventService.bulkUpload(entry.getValue());
+				break;
 			case "User":
+				break;
 			case "To do":
+				todoService.bulkUpload(entry.getValue());
+				break;
 			}
 
 		}
